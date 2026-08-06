@@ -1,0 +1,293 @@
+/* 홈(목록) 화면 컴포넌트: 히어로, 검색, 카테고리 탭, 글 카드 */
+
+/* ---------- 히어로 ---------- */
+.hero {
+  padding: 56px 0 8px;
+}
+
+.hero h1 {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+}
+
+.hero p {
+  margin-top: 10px;
+  font-size: 16px;
+  color: var(--text-weak);
+}
+
+/* ---------- 검색 ---------- */
+.search-wrap {
+  position: relative;
+  margin: 28px 0 20px;
+}
+
+.search-wrap svg {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--text-weak);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 20px 0 48px;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--bg-elevated);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.search-input::placeholder {
+  color: var(--text-weak);
+}
+
+.search-input:focus {
+  background: var(--bg-card);
+  border-color: var(--primary);
+}
+
+/* ---------- 카테고리 탭 ---------- */
+.category-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0 16px;
+  scrollbar-width: none;
+}
+
+.category-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  flex: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-sub);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  transition: all 0.15s ease;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab.active {
+  color: #fff;
+  background: var(--primary);
+}
+
+.tab .count {
+  margin-left: 4px;
+  font-weight: 500;
+  opacity: 0.65;
+  font-size: 12px;
+}
+
+/* ---------- 활성 태그 필터 표시 ---------- */
+.active-tag-bar {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-sub);
+}
+
+.active-tag-bar.show {
+  display: flex;
+}
+
+.active-tag-bar .clear {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* ---------- 글 카드 리스트 ---------- */
+.post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 40px;
+}
+
+.post-card {
+  display: flex;
+  gap: 20px;
+  padding: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--border-strong);
+}
+
+.post-card .body {
+  flex: 1;
+  min-width: 0;
+}
+
+.post-card .meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-weak);
+  margin-bottom: 8px;
+}
+
+.post-card .meta .category {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.post-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.post-card:hover h2 {
+  color: var(--primary);
+}
+
+.post-card .summary {
+  font-size: 15px;
+  color: var(--text-sub);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.post-card .thumb {
+  flex: none;
+  width: 130px;
+  height: 96px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--bg-elevated);
+}
+
+.post-card .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+/* ---------- 태그 칩 (공용) ---------- */
+.tag-chip {
+  padding: 4px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--primary-weak-text);
+  background: var(--primary-weak);
+  border-radius: var(--radius-full);
+  transition: filter 0.15s ease;
+}
+
+.tag-chip:hover {
+  filter: brightness(0.95);
+}
+
+[data-theme="dark"] .tag-chip:hover {
+  filter: brightness(1.2);
+}
+
+/* ---------- 빈 상태 ---------- */
+.empty-state {
+  padding: 80px 0;
+  text-align: center;
+  color: var(--text-weak);
+}
+
+.empty-state .emoji {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+/* ---------- 공용 버튼 ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 20px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  color: #fff;
+  background: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  color: var(--text-sub);
+  background: var(--bg-elevated);
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+  filter: brightness(0.97);
+}
+
+.btn-danger {
+  color: var(--danger);
+  background: var(--danger-weak);
+}
+
+.btn-sm {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 13.5px;
+}
+
+@media (max-width: 640px) {
+  .hero h1 {
+    font-size: 26px;
+  }
+
+  .post-card {
+    padding: 20px;
+  }
+
+  .post-card .thumb {
+    display: none;
+  }
+}

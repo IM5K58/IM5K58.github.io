@@ -1,0 +1,62 @@
+/* 디자인 토큰 — 색상/라운드/그림자는 전부 여기서만 정의한다 */
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f9fafb;
+  --bg-elevated: #f2f4f6;
+  --bg-card: #ffffff;
+
+  --text: #191f28;
+  --text-sub: #4e5968;
+  --text-weak: #8b95a1;
+
+  --primary: #3182f6;
+  --primary-hover: #1b64da;
+  --primary-weak: #e8f3ff;
+  --primary-weak-text: #1b64da;
+
+  --danger: #f04452;
+  --danger-weak: #fdedee;
+
+  --border: #f2f4f6;
+  --border-strong: #e5e8eb;
+
+  --code-bg: #f6f8fa;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.03), 0 6px 20px rgba(0, 0, 0, 0.05);
+  --shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.1);
+  --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.12);
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-full: 999px;
+
+  --header-h: 60px;
+}
+
+[data-theme="dark"] {
+  --bg: #17171c;
+  --bg-soft: #1c1c22;
+  --bg-elevated: #26262e;
+  --bg-card: #1e1e25;
+
+  --text: #e5e8eb;
+  --text-sub: #b0b8c1;
+  --text-weak: #6b7684;
+
+  --primary: #4593fc;
+  --primary-hover: #6aa8fd;
+  --primary-weak: #1b2a45;
+  --primary-weak-text: #7cb3fd;
+
+  --danger: #f66570;
+  --danger-weak: #3a2226;
+
+  --border: #26262e;
+  --border-strong: #333340;
+
+  --code-bg: #22222a;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.25), 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.6);
+}

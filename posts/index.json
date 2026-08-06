@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "posts": [
+    {
+      "slug": "2026-08-06-js-closure",
+      "title": "JavaScript 클로저(Closure) 정리",
+      "date": "2026-08-06T13:00:00+09:00",
+      "updated": "2026-08-06T13:00:00+09:00",
+      "category": "JavaScript",
+      "tags": ["javascript", "closure", "scope"],
+      "summary": "클로저가 무엇인지, 왜 생기는지, 실무에서 어떻게 쓰이는지 예제 코드와 함께 정리했습니다.",
+      "thumbnail": "",
+      "draft": false
+    },
+    {
+      "slug": "2026-08-06-hello-blog",
+      "title": "블로그를 시작합니다",
+      "date": "2026-08-06T12:00:00+09:00",
+      "updated": "2026-08-06T12:00:00+09:00",
+      "category": "일상",
+      "tags": ["블로그", "시작"],
+      "summary": "공부한 것들을 정리하기 위한 블로그를 열었습니다. 이 블로그가 어떻게 동작하는지도 간단히 소개합니다.",
+      "thumbnail": "",
+      "draft": false
+    }
+  ]
+}

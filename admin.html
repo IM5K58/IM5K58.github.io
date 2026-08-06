@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>글 관리 — IM5K58.log</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/3.2.2/toastui-editor.min.css">
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/3.2.2/theme/toastui-editor-dark.min.css">
+  <link rel="stylesheet" id="hljs-light" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <link rel="stylesheet" id="hljs-dark" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" disabled>
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/admin.css">
+  <script src="/js/theme.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="inner">
+      <a class="site-logo" href="/">IM5K58<span class="dot">.</span>log <span style="font-weight:600;font-size:14px;color:var(--text-weak)">/ 관리</span></a>
+      <div class="header-actions">
+        <button class="icon-btn" id="theme-toggle" title="테마 전환" aria-label="테마 전환">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container admin-container">
+    <div class="banner" id="banner"></div>
+
+    <!-- 토큰 로그인 -->
+    <section class="admin-view" id="login-view">
+      <div class="login-card">
+        <h1 class="admin-title">글 관리 시작하기</h1>
+        <p class="admin-sub">GitHub 토큰으로 이 블로그 저장소에 연결합니다.<br>토큰은 이 브라우저에만 저장돼요.</p>
+        <div class="field">
+          <label for="token-input">GitHub Fine-grained Token</label>
+          <input type="password" id="token-input" placeholder="github_pat_..." autocomplete="off">
+          <div class="error" id="token-error"></div>
+        </div>
+        <div class="field">
+          <button class="btn btn-primary" id="btn-login" style="width:100%">연결하기</button>
+        </div>
+        <div class="token-guide">
+          <strong>토큰 발급 방법</strong> (한 번만 하면 됩니다)
+          <ol>
+            <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained token 발급 페이지</a> 접속</li>
+            <li>Repository access: <strong>Only select repositories → IM5K58.github.io만</strong> 선택</li>
+            <li>Permissions → Repository permissions → <strong>Contents: Read and write</strong>만 부여</li>
+            <li>만료 기간 설정(90일 권장) 후 생성된 토큰을 위에 붙여넣기</li>
+          </ol>
+          이렇게 발급하면 토큰이 유출되더라도 피해 범위가 이 블로그 저장소로 한정됩니다.
+          공용 PC에서는 사용 후 꼭 로그아웃하세요.
+        </div>
+      </div>
+    </section>
+
+    <!-- 글 목록 관리 -->
+    <section class="admin-view" id="list-view">
+      <div class="admin-topbar">
+        <h1 class="admin-title">내 글 관리</h1>
+        <div class="actions">
+          <button class="btn btn-primary" id="btn-new">+ 새 글 쓰기</button>
+          <button class="btn btn-ghost" id="btn-rebuild" title="md 파일 기준으로 index.json을 다시 생성">인덱스 재빌드</button>
+          <button class="btn btn-ghost" id="btn-logout">로그아웃</button>
+        </div>
+      </div>
+      <div class="manage-list" id="manage-list"></div>
+    </section>
+
+    <!-- 에디터 -->
+    <section class="admin-view" id="editor-view">
+      <div class="admin-topbar">
+        <h1 class="admin-title" id="editor-title">새 글 쓰기</h1>
+        <div class="actions">
+          <button class="btn btn-ghost" id="btn-back">← 목록으로</button>
+          <button class="btn btn-primary" id="btn-save">저장 (커밋)</button>
+        </div>
+      </div>
+
+      <div class="editor-meta">
+        <div class="field wide">
+          <label for="f-title">제목</label>
+          <input type="text" id="f-title" placeholder="글 제목">
+        </div>
+        <div class="field">
+          <label for="f-slug">Slug (URL 주소)</label>
+          <input type="text" id="f-slug" placeholder="2026-08-06-example" autocomplete="off">
+          <div class="hint">영문 소문자·숫자·하이픈. 저장 후엔 변경할 수 없어요.</div>
+          <div class="error" id="slug-error"></div>
+        </div>
+        <div class="field">
+          <label for="f-category">카테고리</label>
+          <input type="text" id="f-category" list="category-options" placeholder="예: JavaScript" autocomplete="off">
+          <datalist id="category-options"></datalist>
+        </div>
+        <div class="field">
+          <label for="f-tags">태그 (쉼표로 구분)</label>
+          <input type="text" id="f-tags" placeholder="예: closure, scope" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="f-thumbnail">썸네일 경로 (선택)</label>
+          <input type="text" id="f-thumbnail" placeholder="이미지 붙여넣으면 자동 입력" autocomplete="off">
+        </div>
+        <div class="field wide">
+          <label for="f-summary">요약 (목록에 표시)</label>
+          <input type="text" id="f-summary" placeholder="이 글을 한두 문장으로 요약하면?">
+        </div>
+        <div class="field wide">
+          <label class="checkbox-field"><input type="checkbox" id="f-draft"> 임시글 (목록에 노출하지 않음)</label>
+        </div>
+      </div>
+
+      <div id="editor"></div>
+    </section>
+  </main>
+
+  <script src="https://uicdn.toast.com/editor/3.2.2/toastui-editor-all.min.js"></script>
+  <script src="/js/config.js"></script>
+  <script src="/js/posts.js"></script>
+  <script src="/js/render.js"></script>
+  <script src="/js/github-api.js"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>
