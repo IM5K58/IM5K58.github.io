@@ -3,7 +3,12 @@
   const INDEX_PATH = "posts/index.json";
 
   const $ = (id) => document.getElementById(id);
-  const views = { login: $("login-view"), list: $("list-view"), editor: $("editor-view") };
+  const views = {
+    login: $("login-view"),
+    list: $("list-view"),
+    cats: $("cats-view"),
+    editor: $("editor-view"),
+  };
 
   let index = { version: 1, posts: [] }; // posts/index.json 내용
   let editing = null; // 수정 중인 글의 기존 메타 (신규면 null)
@@ -64,15 +69,19 @@
 
   async function loadIndex() {
     const file = await GH.getFile(INDEX_PATH);
-    index = file ? JSON.parse(file.text) : { version: 1, posts: [] };
+    index = file ? JSON.parse(file.text) : { version: 1, categories: [], posts: [] };
     index.posts = index.posts || [];
+    // 예전 index.json엔 categories가 없을 수 있음 → 글에서 파생해 초기화
+    if (!index.categories) {
+      index.categories = [...new Set(index.posts.map((p) => p.category).filter(Boolean))];
+    }
   }
 
   // ---------- 글 목록 ----------
   function renderList() {
     const listEl = $("manage-list");
     if (!index.posts.length) {
-      listEl.innerHTML = `<div class="empty-state"><div class="emoji">📝</div><p>아직 글이 없어요. 첫 글을 써보세요!</p></div>`;
+      listEl.innerHTML = `<div class="empty-state"><p>아직 글이 없어요. 첫 글을 써보세요!</p></div>`;
       return;
     }
     listEl.innerHTML = index.posts
@@ -91,6 +100,67 @@
       </div>`
       )
       .join("");
+  }
+
+  // ---------- 카테고리 관리 ----------
+  function categoryUsage(cat) {
+    return index.posts.filter((p) => (p.category || "미분류") === cat).length;
+  }
+
+  function renderCats() {
+    const listEl = $("cats-list");
+    if (!index.categories.length) {
+      listEl.innerHTML = `<div class="empty-state"><p>아직 카테고리가 없어요. 위에서 추가해 보세요.</p></div>`;
+      return;
+    }
+    listEl.innerHTML = index.categories
+      .map((c) => {
+        const n = categoryUsage(c);
+        return `
+      <div class="manage-row" data-cat="${esc(c)}">
+        <div class="info">
+          <div class="title">${esc(c)}</div>
+          <div class="sub">글 ${n}개</div>
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-danger btn-sm" data-action="del-cat" ${n ? "disabled title='글이 있는 카테고리는 삭제할 수 없어요'" : ""}>삭제</button>
+        </div>
+      </div>`;
+      })
+      .join("");
+  }
+
+  async function addCategory() {
+    const name = $("new-cat").value.trim();
+    if (!name) return;
+    if (index.categories.includes(name)) return banner("error", "이미 있는 카테고리예요.");
+    try {
+      banner("info", "카테고리 저장 중...");
+      index.categories.push(name);
+      await GH.putFile(INDEX_PATH, JSON.stringify(index, null, 2), `categories: ${name} 추가`);
+      $("new-cat").value = "";
+      renderCats();
+      banner("success", `"${esc(name)}" 카테고리를 추가했어요.`);
+    } catch (err) {
+      index.categories = index.categories.filter((c) => c !== name);
+      banner("error", `저장 실패: ${esc(err.message)}`);
+    }
+  }
+
+  async function removeCategory(name) {
+    if (categoryUsage(name)) return;
+    if (!confirm(`"${name}" 카테고리를 삭제할까요?`)) return;
+    const before = index.categories;
+    try {
+      banner("info", "카테고리 저장 중...");
+      index.categories = index.categories.filter((c) => c !== name);
+      await GH.putFile(INDEX_PATH, JSON.stringify(index, null, 2), `categories: ${name} 삭제`);
+      renderCats();
+      banner("success", "삭제했어요.");
+    } catch (err) {
+      index.categories = before;
+      banner("error", `저장 실패: ${esc(err.message)}`);
+    }
   }
 
   // ---------- 에디터 ----------
@@ -162,16 +232,17 @@
     $("f-title").value = post ? post.title : "";
     $("f-slug").value = post ? post.slug : `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}-`;
     $("f-slug").disabled = !!post; // slug 변경은 삭제 후 재작성으로 유도
-    $("f-category").value = post ? post.category || "" : "";
     $("f-tags").value = post ? (post.tags || []).join(", ") : "";
     $("f-summary").value = post ? post.summary || "" : "";
     $("f-thumbnail").value = post ? post.thumbnail || "" : "";
     $("f-draft").checked = post ? !!post.draft : false;
     $("slug-error").textContent = "";
 
-    // 기존 카테고리 자동완성
-    $("category-options").innerHTML = [...new Set(index.posts.map((x) => x.category).filter(Boolean))]
-      .map((c) => `<option value="${esc(c)}">`)
+    // 카테고리 선택란: 등록된 카테고리 + (수정 시) 이 글의 기존 카테고리
+    const current = post ? post.category || "미분류" : "미분류";
+    const options = [...new Set(["미분류", ...index.categories, current])];
+    $("f-category").innerHTML = options
+      .map((c) => `<option value="${esc(c)}" ${c === current ? "selected" : ""}>${esc(c)}</option>`)
       .join("");
 
     showView("editor");
@@ -328,7 +399,13 @@
         });
       }
       posts.sort((a, b) => (a.date < b.date ? 1 : -1));
-      index = { version: 1, posts };
+      const cats = [
+        ...new Set([
+          ...(index.categories || []),
+          ...posts.map((p) => p.category).filter((c) => c && c !== "미분류"),
+        ]),
+      ];
+      index = { version: 1, categories: cats, posts };
       banner("info", "index.json 커밋 중...");
       await GH.putFile(INDEX_PATH, JSON.stringify(index, null, 2), "index: 재빌드");
       renderList();
@@ -351,6 +428,21 @@
 
   $("btn-new").addEventListener("click", () => openEditor(null));
   $("btn-rebuild").addEventListener("click", rebuildIndex);
+
+  $("btn-cats").addEventListener("click", () => {
+    renderCats();
+    showView("cats");
+  });
+  $("btn-cats-back").addEventListener("click", () => showView("list"));
+  $("btn-add-cat").addEventListener("click", addCategory);
+  $("new-cat").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") addCategory();
+  });
+  $("cats-list").addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-action='del-cat']");
+    if (!btn || btn.disabled) return;
+    removeCategory(btn.closest(".manage-row").dataset.cat);
+  });
   $("btn-logout").addEventListener("click", () => {
     if (!confirm("토큰을 이 브라우저에서 삭제할까요?")) return;
     GH.clearToken();

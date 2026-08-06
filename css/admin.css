@@ -76,6 +76,7 @@
 
 .field input[type="text"],
 .field input[type="password"],
+.field select,
 .field textarea {
   width: 100%;
   height: 46px;
@@ -95,7 +96,37 @@
 }
 
 .field input:focus,
+.field select:focus,
 .field textarea:focus {
+  background: var(--bg-card);
+  border-color: var(--primary);
+}
+
+.field select {
+  cursor: pointer;
+}
+
+/* ---------- 카테고리 관리 ---------- */
+.cats-add {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  max-width: 480px;
+}
+
+.cats-add input {
+  flex: 1;
+  height: 44px;
+  padding: 0 14px;
+  font-size: 15px;
+  background: var(--bg-elevated);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.cats-add input:focus {
   background: var(--bg-card);
   border-color: var(--primary);
 }

@@ -5,7 +5,7 @@ const CONFIG = {
   branch: "main",
   siteUrl: "https://im5k58.github.io",
 
-  blogTitle: "IM5K58.log",
+  blogTitle: "Kyumswriting",
   blogDescription: "공부한 것들을 정리하는 공간",
 
   // giscus 댓글 (https://giscus.app 에서 발급받은 값 기입 후 enabled: true)

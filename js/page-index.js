@@ -31,7 +31,6 @@
     if (!posts.length) {
       listEl.innerHTML = `
         <div class="empty-state">
-          <div class="emoji">🔍</div>
           <p>${allPosts.length ? "조건에 맞는 글이 없어요." : "아직 작성된 글이 없어요."}</p>
         </div>`;
       return;
@@ -108,7 +107,6 @@
   } catch (err) {
     listEl.innerHTML = `
       <div class="empty-state">
-        <div class="emoji">⚠️</div>
         <p>글 목록을 불러오지 못했어요.<br>${esc(err.message)}</p>
       </div>`;
   }

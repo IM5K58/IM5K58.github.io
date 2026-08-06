@@ -1,4 +1,4 @@
-# IM5K58.log
+# Kyumswriting
 
 공부한 것들을 정리하는 개인 학습 블로그. https://im5k58.github.io
 
