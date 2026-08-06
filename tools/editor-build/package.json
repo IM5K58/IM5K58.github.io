@@ -1,0 +1,15 @@
+{
+  "name": "editor-build",
+  "private": true,
+  "description": "admin 에디터(Milkdown Crepe) 벤더 번들 빌드 — 산출물은 assets/vendor/에 커밋됨",
+  "scripts": {
+    "build": "esbuild entry.js --bundle --format=esm --minify --outfile=../../assets/vendor/editor.bundle.js && esbuild entry.css --bundle --minify --outfile=../../assets/vendor/editor.bundle.css --loader:.woff2=dataurl --loader:.woff=dataurl --loader:.ttf=dataurl"
+  },
+  "dependencies": {
+    "@milkdown/crepe": "7.22.0",
+    "@milkdown/kit": "7.22.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.2"
+  }
+}

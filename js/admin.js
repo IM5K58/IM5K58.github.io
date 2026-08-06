@@ -13,11 +13,10 @@
   let index = { version: 1, posts: [] }; // posts/index.json 내용
   let editing = null; // 수정 중인 글의 기존 메타 (신규면 null)
   let crepe = null; // Crepe 에디터 인스턴스
-  let CrepeLib = null; // 동적 import된 모듈 캐시
+  let CrepeLib = null; // 동적 import된 에디터 번들 모듈 캐시
   let pollTimer = null;
-  let calloutObserver = null;
 
-  const CREPE_URL = "https://esm.sh/@milkdown/crepe@7.22.0?bundle";
+  const EDITOR_BUNDLE_URL = "/assets/vendor/editor.bundle.js";
   const RAW_BASE = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}`;
 
   // ---------- 공통 UI ----------
@@ -203,8 +202,8 @@
   // setMarkdown이 없어서 글을 열 때마다 destroy 후 defaultValue로 재생성한다
   async function createEditor(markdown) {
     if (!CrepeLib) {
-      banner("info", "에디터 로딩 중... (최초 1회만 오래 걸려요)");
-      CrepeLib = await import(CREPE_URL);
+      banner("info", "에디터 로딩 중...");
+      CrepeLib = await import(EDITOR_BUNDLE_URL);
       banner();
     }
     const { Crepe } = CrepeLib;
@@ -269,79 +268,58 @@
             math: { label: "수식 블록 (math)" },
           },
           buildMenu(builder) {
-            // 콜아웃: 인용구 항목의 동작을 재사용하고 [!NOTE] 마커를 입력
-            const textGroup = builder.getGroup("text");
-            const quoteItem = textGroup.group.items.find((i) => i.key === "quote");
-            if (!quoteItem) return;
-            textGroup.addItem("callout", {
+            // 콜아웃: 인용구로 감싸고 [!NOTE] 마커를 삽입 (번들에 포함된 kit API 사용)
+            const M = CrepeLib;
+            builder.getGroup("text").addItem("callout", {
               label: "콜아웃 (callout)",
               icon: `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 12h.01M11 12h6" stroke-linecap="round"/></svg>`,
               onRun: (ctx) => {
-                quoteItem.onRun(ctx);
-                setTimeout(
-                  () => document.execCommand("insertText", false, "[!NOTE] "),
-                  50
-                );
+                const commands = ctx.get(M.commandsCtx);
+                commands.call(M.clearTextInCurrentBlockCommand.key);
+                commands.call(M.wrapInBlockTypeCommand.key, {
+                  nodeType: M.blockquoteSchema.type(ctx),
+                });
+                const view = ctx.get(M.editorViewCtx);
+                view.dispatch(view.state.tr.insertText("[!NOTE] ", view.state.selection.from));
+                view.focus();
               },
             });
           },
         },
       },
     });
+    crepe.editor.use(makeCalloutPlugin());
     await crepe.create();
-    watchCallouts();
   }
 
-  // 에디터 안 콜아웃 실시간 시각화.
-  // 주의: ProseMirror는 자기 DOM에 외부에서 붙인 속성/클래스를 즉시 되돌리므로
-  // 에디터 DOM은 건드리지 않고, 뒤에 깔린 오버레이 레이어에 색 박스를 그린다.
-  function watchCallouts() {
-    const rootEl = $("editor");
-    let layer = rootEl.querySelector(".callout-layer");
-    if (!layer) {
-      layer = document.createElement("div");
-      layer.className = "callout-layer";
-      rootEl.prepend(layer);
-    }
-
-    const paint = () => {
-      const rootRect = rootEl.getBoundingClientRect();
-      layer.innerHTML = "";
-      rootEl.querySelectorAll(".ProseMirror blockquote").forEach((bq) => {
-        const m = bq.textContent
-          .trimStart()
-          .match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i);
-        if (!m) return;
-        const r = bq.getBoundingClientRect();
-        const d = document.createElement("div");
-        d.className = `callout-hl callout-${m[1].toLowerCase()}`;
-        d.style.top = `${r.top - rootRect.top}px`;
-        d.style.left = `${r.left - rootRect.left}px`;
-        d.style.width = `${r.width}px`;
-        d.style.height = `${r.height}px`;
-        layer.appendChild(d);
-      });
-    };
-
-    if (calloutObserver) calloutObserver.disconnect();
-    calloutObserver = new MutationObserver(() => {
-      clearTimeout(watchCallouts._t);
-      watchCallouts._t = setTimeout(paint, 60); // rAF는 백그라운드 탭에서 멈춤
-    });
-    // 레이어 자신은 관찰 대상에서 빼야 무한 루프가 안 생김 → ProseMirror만 관찰
-    const pmEl = rootEl.querySelector(".ProseMirror");
-    if (pmEl) {
-      calloutObserver.observe(pmEl, { childList: true, subtree: true, characterData: true });
-    }
-    if (!watchCallouts._resizeBound) {
-      watchCallouts._resizeBound = true;
-      window.addEventListener("resize", () => {
-        clearTimeout(watchCallouts._t);
-        watchCallouts._t = setTimeout(paint, 100);
-      });
-    }
-    paint();
-    setTimeout(paint, 400); // 초기 렌더가 create() 이후 비동기로 끝나는 경우 대비
+  // 에디터 안 콜아웃 실시간 시각화 — ProseMirror 네이티브 데코레이션.
+  // (외부에서 DOM에 클래스를 붙이면 PM이 즉시 되돌리지만, 데코레이션은 PM이 직접 관리)
+  function makeCalloutPlugin() {
+    const M = CrepeLib;
+    return M.$prose(
+      () =>
+        new M.Plugin({
+          props: {
+            decorations(state) {
+              const decos = [];
+              state.doc.descendants((node, pos) => {
+                if (node.type.name !== "blockquote") return;
+                const m = node.textContent
+                  .trimStart()
+                  .match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i);
+                if (m) {
+                  decos.push(
+                    M.Decoration.node(pos, pos + node.nodeSize, {
+                      class: `callout-bq callout-${m[1].toLowerCase()}`,
+                    })
+                  );
+                }
+              });
+              return M.DecorationSet.create(state.doc, decos);
+            },
+          },
+        })
+    );
   }
 
   // Crepe ImageBlock onUpload: 파일을 저장소에 커밋하고 md에 넣을 경로를 반환

@@ -1,0 +1,4 @@
+/* Crepe 에디터 CSS 번들 — 내부 @import(@milkdown/kit, katex 등)까지 전부 포함됨.
+   jsdelivr에서 직접 로드하면 bare @import 경로가 404라 반드시 번들해야 함. */
+@import "@milkdown/crepe/theme/common/style.css";
+@import "@milkdown/crepe/theme/frame.css";
