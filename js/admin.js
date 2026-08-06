@@ -12,8 +12,12 @@
 
   let index = { version: 1, posts: [] }; // posts/index.json 내용
   let editing = null; // 수정 중인 글의 기존 메타 (신규면 null)
-  let editor = null; // Toast UI 인스턴스
+  let crepe = null; // Crepe 에디터 인스턴스
+  let CrepeLib = null; // 동적 import된 모듈 캐시
   let pollTimer = null;
+
+  const CREPE_URL = "https://esm.sh/@milkdown/crepe@7.22.0?bundle";
+  const RAW_BASE = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}`;
 
   // ---------- 공통 UI ----------
   function showView(name) {
@@ -163,67 +167,128 @@
     }
   }
 
-  // ---------- 에디터 ----------
-  function ensureEditor() {
-    if (editor) return editor;
-    editor = new toastui.Editor({
-      el: $("editor"),
-      height: "620px",
-      initialEditType: "markdown",
-      previewStyle: "vertical",
-      usageStatistics: false,
-      theme: Theme.current() === "dark" ? "dark" : "default",
-      placeholder: "내용을 입력하세요...",
-      hooks: { addImageBlobHook: uploadImage },
-      customHTMLRenderer: {
-        // 저장 전엔 /assets/... 가 아직 배포 전이라 미리보기에서 깨짐 → 미리보기만 raw URL로 치환
-        image(node, context) {
-          const result = context.origin();
-          const src = node.destination || "";
-          if (src.startsWith("/assets/")) {
-            result.attrs = result.attrs || {};
-            result.attrs.src = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}${src}`;
-          }
-          return result;
+  // ---------- 에디터 (Milkdown Crepe: 노션식 "/" 블록 메뉴) ----------
+  // setMarkdown이 없어서 글을 열 때마다 destroy 후 defaultValue로 재생성한다
+  async function createEditor(markdown) {
+    if (!CrepeLib) {
+      banner("info", "에디터 로딩 중... (최초 1회만 오래 걸려요)");
+      CrepeLib = await import(CREPE_URL);
+      banner();
+    }
+    const { Crepe } = CrepeLib;
+    if (crepe) {
+      await crepe.destroy().catch(() => {});
+      crepe = null;
+    }
+    $("editor").innerHTML = "";
+
+    crepe = new Crepe({
+      root: $("editor"),
+      defaultValue: markdown,
+      features: {
+        [Crepe.Feature.Latex]: true,
+        [Crepe.Feature.Table]: true,
+        [Crepe.Feature.TopBar]: false,
+        [Crepe.Feature.AI]: false,
+      },
+      featureConfigs: {
+        [Crepe.Feature.Placeholder]: {
+          text: "내용을 입력하세요. '/'를 누르면 블록 메뉴가 열려요.",
+        },
+        [Crepe.Feature.ImageBlock]: {
+          onUpload: uploadImage,
+          // md에는 /assets/... 상대경로가 저장되고, 편집 화면 표시만 raw URL로 프록시
+          // (커밋 직후엔 Pages 배포 전이라 상대경로가 아직 404이기 때문)
+          proxyDomURL: (url) =>
+            url && url.startsWith("/assets/") ? RAW_BASE + url : url,
+          blockUploadButton: "파일 선택",
+          inlineUploadButton: "파일 선택",
+          blockUploadPlaceholderText: "또는 이미지 주소 붙여넣기",
+          inlineUploadPlaceholderText: "또는 주소 붙여넣기",
+          blockCaptionPlaceholderText: "이미지 설명 (선택)",
+          blockConfirmButton: "확인",
+        },
+        [Crepe.Feature.BlockEdit]: {
+          textGroup: {
+            label: "텍스트",
+            text: { label: "본문" },
+            h1: { label: "제목 1" },
+            h2: { label: "제목 2" },
+            h3: { label: "제목 3" },
+            h4: { label: "제목 4" },
+            h5: null,
+            h6: null,
+            quote: { label: "인용구" },
+            divider: { label: "구분선" },
+          },
+          listGroup: {
+            label: "목록",
+            bulletList: { label: "글머리 목록" },
+            orderedList: { label: "번호 목록" },
+            taskList: { label: "할 일 목록" },
+          },
+          advancedGroup: {
+            label: "블록",
+            image: { label: "이미지" },
+            codeBlock: { label: "코드 블록" },
+            table: { label: "표" },
+            math: { label: "수식 블록" },
+          },
+          buildMenu(builder) {
+            // 콜아웃: 인용구 항목의 동작을 재사용하고 [!NOTE] 마커를 입력
+            const textGroup = builder.getGroup("text");
+            const quoteItem = textGroup.group.items.find((i) => i.key === "quote");
+            if (!quoteItem) return;
+            textGroup.addItem("callout", {
+              label: "콜아웃",
+              icon: `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 12h.01M11 12h6" stroke-linecap="round"/></svg>`,
+              onRun: (ctx) => {
+                quoteItem.onRun(ctx);
+                setTimeout(
+                  () => document.execCommand("insertText", false, "[!NOTE] "),
+                  50
+                );
+              },
+            });
+          },
         },
       },
     });
-    document.addEventListener("themechange", (e) => {
-      const ui = document.querySelector(".toastui-editor-defaultUI");
-      if (ui) ui.classList.toggle("toastui-editor-dark", e.detail.theme === "dark");
-    });
-    return editor;
+    await crepe.create();
   }
 
-  async function uploadImage(blob, callback) {
+  // Crepe ImageBlock onUpload: 파일을 저장소에 커밋하고 md에 넣을 경로를 반환
+  async function uploadImage(file) {
     try {
       banner("info", "이미지 업로드 중...");
       const d = new Date();
       const p = (n) => String(n).padStart(2, "0");
-      const safeName = (blob.name || "image.png")
-        .toLowerCase()
-        .replace(/[^a-z0-9.]+/g, "-")
-        .replace(/^-+|-+$/g, "");
+      const safeName =
+        (file.name || "image.png")
+          .toLowerCase()
+          .replace(/[^a-z0-9.]+/g, "-")
+          .replace(/^-+|-+$/g, "") || "image.png";
       const path = `assets/images/${d.getFullYear()}/${p(d.getMonth() + 1)}/${Date.now()}-${safeName}`;
 
       const b64 = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result.split(",")[1]);
         reader.onerror = reject;
-        reader.readAsDataURL(blob);
+        reader.readAsDataURL(file);
       });
 
       await GH.putFile(path, b64, `image: ${safeName} 업로드`, { isBase64: true });
       const url = `/${path}`;
       if (!$("f-thumbnail").value) $("f-thumbnail").value = url;
       banner("success", "이미지 업로드 완료");
-      callback(url, safeName);
+      return url;
     } catch (err) {
       banner("error", `이미지 업로드 실패: ${esc(err.message)}`);
+      throw err;
     }
   }
 
-  function openEditor(post) {
+  async function openEditor(post) {
     editing = post || null;
     const d = new Date();
     const p = (n) => String(n).padStart(2, "0");
@@ -246,18 +311,19 @@
       .join("");
 
     showView("editor");
-    ensureEditor().setMarkdown("");
 
-    if (post) {
-      banner("info", "글 내용 불러오는 중...");
-      GH.getFile(`posts/${post.slug}.md`)
-        .then((file) => {
-          if (!file) throw new Error("md 파일이 없습니다. 인덱스 재빌드를 해보세요.");
-          const { body } = Render.parseFrontmatter(file.text);
-          editor.setMarkdown(body);
-          banner();
-        })
-        .catch((err) => banner("error", esc(err.message)));
+    try {
+      let body = "";
+      if (post) {
+        banner("info", "글 내용 불러오는 중...");
+        const file = await GH.getFile(`posts/${post.slug}.md`);
+        if (!file) throw new Error("md 파일이 없습니다. 인덱스 재빌드를 해보세요.");
+        body = Render.parseFrontmatter(file.text).body;
+        banner();
+      }
+      await createEditor(body);
+    } catch (err) {
+      banner("error", esc(err.message));
     }
   }
 
@@ -295,7 +361,8 @@
     saveBtn.disabled = true;
     try {
       banner("info", "글 커밋 중... (1/2)");
-      const md = Render.buildFrontmatter(meta) + "\n\n" + ensureEditor().getMarkdown().trim() + "\n";
+      if (!crepe) throw new Error("에디터가 아직 준비되지 않았어요.");
+      const md = Render.buildFrontmatter(meta) + "\n\n" + crepe.getMarkdown().trim() + "\n";
       await GH.putFile(`posts/${slug}.md`, md, `post: ${title}`);
 
       banner("info", "목록 갱신 중... (2/2)");

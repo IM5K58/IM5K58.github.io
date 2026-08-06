@@ -255,13 +255,46 @@
 
 #editor {
   margin-bottom: 20px;
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-card);
 }
 
-/* Toast UI가 테마 변수를 따르도록 보정 */
-.toastui-editor-defaultUI {
-  border-color: var(--border-strong) !important;
-  border-radius: var(--radius-sm) !important;
-  overflow: hidden;
+/* Crepe(노션식 에디터)를 우리 디자인 토큰에 매핑 — 다크모드도 변수로 자동 전환 */
+.milkdown {
+  --crepe-color-background: var(--bg-card);
+  --crepe-color-on-background: var(--text);
+  --crepe-color-surface: var(--bg-soft);
+  --crepe-color-surface-low: var(--bg-elevated);
+  --crepe-color-on-surface: var(--text);
+  --crepe-color-on-surface-variant: var(--text-sub);
+  --crepe-color-outline: var(--border-strong);
+  --crepe-color-primary: var(--primary);
+  --crepe-color-secondary: var(--primary-weak);
+  --crepe-color-on-secondary: var(--primary-weak-text);
+  --crepe-color-inverse: var(--text);
+  --crepe-color-on-inverse: var(--bg-card);
+  --crepe-color-inline-code: var(--primary-weak-text);
+  --crepe-color-error: var(--danger);
+  --crepe-color-hover: var(--bg-elevated);
+  --crepe-color-selected: var(--primary-weak);
+  --crepe-color-inline-area: var(--bg-elevated);
+
+  --crepe-base-font-size: 16px;
+  --crepe-font-title: "Pretendard Variable", Pretendard, sans-serif;
+  --crepe-font-default: "Pretendard Variable", Pretendard, sans-serif;
+  --crepe-font-code: "JetBrains Mono", "D2Coding", Consolas, monospace;
+
+  --crepe-shadow-1: var(--shadow-card);
+  --crepe-shadow-2: var(--shadow-pop);
+
+  min-height: 560px;
+  padding: 8px 12px;
+}
+
+.milkdown .ProseMirror {
+  min-height: 520px;
 }
 
 .editor-actions {

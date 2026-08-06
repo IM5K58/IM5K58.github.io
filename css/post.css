@@ -132,6 +132,81 @@
   border-top: 1px solid var(--border-strong);
 }
 
+/* ---------- 수식 ---------- */
+.math-block {
+  padding: 8px 0;
+  overflow-x: auto;
+}
+
+.prose .katex {
+  font-size: 1.08em;
+}
+
+/* ---------- 콜아웃 ---------- */
+.prose .callout {
+  --co-color: var(--primary);
+  --co-bg: var(--primary-weak);
+  padding: 16px 20px;
+  background: var(--co-bg);
+  border-left: 3px solid var(--co-color);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text);
+}
+
+.prose .callout-title {
+  font-weight: 800;
+  font-size: 14.5px;
+  color: var(--co-color);
+  margin-bottom: 4px;
+}
+
+.prose .callout-title::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--co-color);
+  vertical-align: 1px;
+}
+
+.prose .callout-tip {
+  --co-color: #12b76a;
+  --co-bg: #e9f9f1;
+}
+
+.prose .callout-important {
+  --co-color: #7a5af8;
+  --co-bg: #f1eeff;
+}
+
+.prose .callout-warning {
+  --co-color: #f79009;
+  --co-bg: #fef4e6;
+}
+
+.prose .callout-caution {
+  --co-color: #f04452;
+  --co-bg: #fdedee;
+}
+
+[data-theme="dark"] .prose .callout-tip {
+  --co-bg: #12301f;
+}
+
+[data-theme="dark"] .prose .callout-important {
+  --co-bg: #241d45;
+}
+
+[data-theme="dark"] .prose .callout-warning {
+  --co-bg: #3a2a12;
+}
+
+[data-theme="dark"] .prose .callout-caution {
+  --co-bg: #3a2226;
+}
+
 /* 인라인 코드 */
 .prose code:not(pre code) {
   padding: 2px 6px;
