@@ -322,49 +322,68 @@
   margin: 0 auto;
 }
 
-/* ---------- 에디터 안 콜아웃 실시간 시각화 ---------- */
-.milkdown blockquote[data-callout] {
-  --co-color: var(--primary);
-  --co-bg: var(--primary-weak);
-  border-left: 3px solid var(--co-color) !important;
-  background: var(--co-bg);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  padding: 12px 16px;
+/* ---------- 에디터 안 콜아웃 실시간 시각화 ----------
+   ProseMirror DOM은 외부 수정을 되돌리므로, 에디터 뒤에 깔린
+   오버레이 레이어(.callout-layer)에 색 박스를 그린다 (admin.js watchCallouts) */
+#editor {
+  position: relative;
 }
 
-.milkdown blockquote[data-callout="tip"] {
+.callout-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#editor .milkdown {
+  position: relative;
+  z-index: 1;
+}
+
+.callout-hl {
+  --co-color: var(--primary);
+  --co-bg: var(--primary-weak);
+  position: absolute;
+  background: var(--co-bg);
+  border-left: 3px solid var(--co-color);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  box-sizing: border-box;
+}
+
+.callout-hl.callout-tip {
   --co-color: #12b76a;
   --co-bg: #e9f9f1;
 }
 
-.milkdown blockquote[data-callout="important"] {
+.callout-hl.callout-important {
   --co-color: #7a5af8;
   --co-bg: #f1eeff;
 }
 
-.milkdown blockquote[data-callout="warning"] {
+.callout-hl.callout-warning {
   --co-color: #f79009;
   --co-bg: #fef4e6;
 }
 
-.milkdown blockquote[data-callout="caution"] {
+.callout-hl.callout-caution {
   --co-color: #f04452;
   --co-bg: #fdedee;
 }
 
-[data-theme="dark"] .milkdown blockquote[data-callout="tip"] {
+[data-theme="dark"] .callout-hl.callout-tip {
   --co-bg: #12301f;
 }
 
-[data-theme="dark"] .milkdown blockquote[data-callout="important"] {
+[data-theme="dark"] .callout-hl.callout-important {
   --co-bg: #241d45;
 }
 
-[data-theme="dark"] .milkdown blockquote[data-callout="warning"] {
+[data-theme="dark"] .callout-hl.callout-warning {
   --co-bg: #3a2a12;
 }
 
-[data-theme="dark"] .milkdown blockquote[data-callout="caution"] {
+[data-theme="dark"] .callout-hl.callout-caution {
   --co-bg: #3a2226;
 }
 

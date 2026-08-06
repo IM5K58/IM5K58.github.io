@@ -292,27 +292,56 @@
     watchCallouts();
   }
 
-  // 에디터 안 콜아웃 실시간 시각화: [!TYPE]로 시작하는 인용구에 data-callout을 붙여
-  // CSS가 색상 박스로 보여준다. ProseMirror가 DOM을 다시 그려도 옵저버가 재적용.
+  // 에디터 안 콜아웃 실시간 시각화.
+  // 주의: ProseMirror는 자기 DOM에 외부에서 붙인 속성/클래스를 즉시 되돌리므로
+  // 에디터 DOM은 건드리지 않고, 뒤에 깔린 오버레이 레이어에 색 박스를 그린다.
   function watchCallouts() {
     const rootEl = $("editor");
-    const tag = () => {
+    let layer = rootEl.querySelector(".callout-layer");
+    if (!layer) {
+      layer = document.createElement("div");
+      layer.className = "callout-layer";
+      rootEl.prepend(layer);
+    }
+
+    const paint = () => {
+      const rootRect = rootEl.getBoundingClientRect();
+      layer.innerHTML = "";
       rootEl.querySelectorAll(".ProseMirror blockquote").forEach((bq) => {
         const m = bq.textContent
           .trimStart()
           .match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i);
-        if (m) bq.dataset.callout = m[1].toLowerCase();
-        else if (bq.dataset.callout) delete bq.dataset.callout;
+        if (!m) return;
+        const r = bq.getBoundingClientRect();
+        const d = document.createElement("div");
+        d.className = `callout-hl callout-${m[1].toLowerCase()}`;
+        d.style.top = `${r.top - rootRect.top}px`;
+        d.style.left = `${r.left - rootRect.left}px`;
+        d.style.width = `${r.width}px`;
+        d.style.height = `${r.height}px`;
+        layer.appendChild(d);
       });
     };
+
     if (calloutObserver) calloutObserver.disconnect();
     calloutObserver = new MutationObserver(() => {
-      cancelAnimationFrame(watchCallouts._raf);
-      watchCallouts._raf = requestAnimationFrame(tag);
+      clearTimeout(watchCallouts._t);
+      watchCallouts._t = setTimeout(paint, 60); // rAF는 백그라운드 탭에서 멈춤
     });
-    // 속성 변화는 관찰하지 않아 dataset 갱신이 무한 루프를 만들지 않는다
-    calloutObserver.observe(rootEl, { childList: true, subtree: true, characterData: true });
-    tag();
+    // 레이어 자신은 관찰 대상에서 빼야 무한 루프가 안 생김 → ProseMirror만 관찰
+    const pmEl = rootEl.querySelector(".ProseMirror");
+    if (pmEl) {
+      calloutObserver.observe(pmEl, { childList: true, subtree: true, characterData: true });
+    }
+    if (!watchCallouts._resizeBound) {
+      watchCallouts._resizeBound = true;
+      window.addEventListener("resize", () => {
+        clearTimeout(watchCallouts._t);
+        watchCallouts._t = setTimeout(paint, 100);
+      });
+    }
+    paint();
+    setTimeout(paint, 400); // 초기 렌더가 create() 이후 비동기로 끝나는 경우 대비
   }
 
   // Crepe ImageBlock onUpload: 파일을 저장소에 커밋하고 md에 넣을 경로를 반환
