@@ -15,6 +15,7 @@
   let crepe = null; // Crepe 에디터 인스턴스
   let CrepeLib = null; // 동적 import된 모듈 캐시
   let pollTimer = null;
+  let calloutObserver = null;
 
   const CREPE_URL = "https://esm.sh/@milkdown/crepe@7.22.0?bundle";
   const RAW_BASE = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}`;
@@ -286,6 +287,30 @@
       },
     });
     await crepe.create();
+    watchCallouts();
+  }
+
+  // 에디터 안 콜아웃 실시간 시각화: [!TYPE]로 시작하는 인용구에 data-callout을 붙여
+  // CSS가 색상 박스로 보여준다. ProseMirror가 DOM을 다시 그려도 옵저버가 재적용.
+  function watchCallouts() {
+    const rootEl = $("editor");
+    const tag = () => {
+      rootEl.querySelectorAll(".ProseMirror blockquote").forEach((bq) => {
+        const m = bq.textContent
+          .trimStart()
+          .match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i);
+        if (m) bq.dataset.callout = m[1].toLowerCase();
+        else if (bq.dataset.callout) delete bq.dataset.callout;
+      });
+    };
+    if (calloutObserver) calloutObserver.disconnect();
+    calloutObserver = new MutationObserver(() => {
+      cancelAnimationFrame(watchCallouts._raf);
+      watchCallouts._raf = requestAnimationFrame(tag);
+    });
+    // 속성 변화는 관찰하지 않아 dataset 갱신이 무한 루프를 만들지 않는다
+    calloutObserver.observe(rootEl, { childList: true, subtree: true, characterData: true });
+    tag();
   }
 
   // Crepe ImageBlock onUpload: 파일을 저장소에 커밋하고 md에 넣을 경로를 반환
@@ -571,6 +596,15 @@
   $("btn-back").addEventListener("click", () => {
     clearInterval(pollTimer);
     showView("list");
+  });
+
+  // 본문 아래 빈 여백을 클릭해도 이어서 쓸 수 있게 (노션 느낌)
+  $("editor").addEventListener("click", (e) => {
+    if (!crepe) return;
+    if (e.target.id === "editor" || e.target.classList.contains("milkdown")) {
+      const pm = $("editor").querySelector(".ProseMirror");
+      if (pm) pm.focus();
+    }
   });
 
   // ---------- 시작 ----------

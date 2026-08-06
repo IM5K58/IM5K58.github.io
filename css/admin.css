@@ -271,17 +271,20 @@
   accent-color: var(--primary);
 }
 
+/* 노션처럼 박스 없이 페이지 위에 바로 쓰는 레이아웃 */
+.editor-meta {
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
 #editor {
-  margin-bottom: 20px;
-  border: 1.5px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  background: var(--bg-card);
+  margin-top: 8px;
+  cursor: text;
 }
 
 /* Crepe(노션식 에디터)를 우리 디자인 토큰에 매핑 — 다크모드도 변수로 자동 전환 */
 .milkdown {
-  --crepe-color-background: var(--bg-card);
+  --crepe-color-background: var(--bg);
   --crepe-color-on-background: var(--text);
   --crepe-color-surface: var(--bg-soft);
   --crepe-color-surface-low: var(--bg-elevated);
@@ -307,12 +310,62 @@
   --crepe-shadow-1: var(--shadow-card);
   --crepe-shadow-2: var(--shadow-pop);
 
-  min-height: 560px;
-  padding: 8px 12px;
+  /* 아래로 넉넉한 여백을 둬서 노션처럼 끝없이 이어 쓰는 느낌 */
+  min-height: 70vh;
+  padding: 8px 0 35vh;
+  background: transparent;
 }
 
+/* 본문 컬럼은 읽기 좋은 폭으로 가운데 정렬 */
 .milkdown .ProseMirror {
-  min-height: 520px;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+/* ---------- 에디터 안 콜아웃 실시간 시각화 ---------- */
+.milkdown blockquote[data-callout] {
+  --co-color: var(--primary);
+  --co-bg: var(--primary-weak);
+  border-left: 3px solid var(--co-color) !important;
+  background: var(--co-bg);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 12px 16px;
+}
+
+.milkdown blockquote[data-callout="tip"] {
+  --co-color: #12b76a;
+  --co-bg: #e9f9f1;
+}
+
+.milkdown blockquote[data-callout="important"] {
+  --co-color: #7a5af8;
+  --co-bg: #f1eeff;
+}
+
+.milkdown blockquote[data-callout="warning"] {
+  --co-color: #f79009;
+  --co-bg: #fef4e6;
+}
+
+.milkdown blockquote[data-callout="caution"] {
+  --co-color: #f04452;
+  --co-bg: #fdedee;
+}
+
+[data-theme="dark"] .milkdown blockquote[data-callout="tip"] {
+  --co-bg: #12301f;
+}
+
+[data-theme="dark"] .milkdown blockquote[data-callout="important"] {
+  --co-bg: #241d45;
+}
+
+[data-theme="dark"] .milkdown blockquote[data-callout="warning"] {
+  --co-bg: #3a2a12;
+}
+
+[data-theme="dark"] .milkdown blockquote[data-callout="caution"] {
+  --co-bg: #3a2226;
 }
 
 .editor-actions {
