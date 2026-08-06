@@ -245,11 +245,12 @@
     }
   }
 
-  // 커밋 후 Pages 배포 반영(수십 초)을 폴링 — updated 타임스탬프가 실제로 보이면 완료
+  // 커밋 후 Pages 배포 반영(수십 초)을 폴링.
+  // 주의: 배포 전에 새 글의 md URL을 두드리면 404 응답이 CDN에 캐시될 수 있으므로,
+  // 항상 200인 index.json에 새 updated 타임스탬프가 보이는지로 확인한다.
   function pollDeploy(slug, updatedIso, title) {
     clearInterval(pollTimer);
     banner("info", `<b>${esc(title)}</b> 커밋 완료 — GitHub Pages 배포 중... (보통 1분 이내)`);
-    const url = `${CONFIG.siteUrl}/posts/${encodeURIComponent(slug)}.md`;
     let tries = 0;
 
     pollTimer = setInterval(async () => {
@@ -259,8 +260,13 @@
         return;
       }
       try {
-        const res = await fetch(`${url}?v=${Date.now()}`, { cache: "no-cache" });
-        if (res.ok && (await res.text()).includes(updatedIso)) {
+        const res = await fetch(`${CONFIG.siteUrl}/posts/index.json?v=${Date.now()}`, {
+          cache: "no-cache",
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        const p = (data.posts || []).find((x) => x.slug === slug);
+        if (p && p.updated === updatedIso) {
           clearInterval(pollTimer);
           banner(
             "success",
