@@ -34,7 +34,7 @@
     document.title = `${title} — ${CONFIG.blogTitle}`;
 
     headEl.innerHTML = `
-      <div class="category">${esc(meta.category || "미분류")}</div>
+      <div class="category">${esc(Posts.catDisplay(meta.category))}</div>
       <h1>${esc(title)}</h1>
       <div class="meta">
         <span>${Posts.formatDate(meta.date)}</span>

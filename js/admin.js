@@ -94,7 +94,7 @@
       <div class="manage-row" data-slug="${esc(p.slug)}">
         <div class="info">
           <div class="title">${esc(p.title)}${p.draft ? '<span class="badge-draft">임시글</span>' : ""}</div>
-          <div class="sub"><span class="category">${esc(p.category || "미분류")}</span> · ${Posts.formatDate(p.date)} · ${esc(p.slug)}</div>
+          <div class="sub"><span class="category">${esc(Posts.catDisplay(p.category))}</span> · ${Posts.formatDate(p.date)} · ${esc(p.slug)}</div>
         </div>
         <div class="row-actions">
           <a class="btn btn-ghost btn-sm" href="/post.html?slug=${encodeURIComponent(p.slug)}" target="_blank">보기</a>
@@ -107,27 +107,54 @@
   }
 
   // ---------- 카테고리 관리 ----------
+  // 카테고리는 "상위" 또는 "상위/하위" 경로 문자열 (하위 1단계)
+  function sortCats() {
+    index.categories.sort((a, b) => a.localeCompare(b, "ko"));
+  }
+
+  // 해당 카테고리(하위 포함)를 쓰는 글 수
   function categoryUsage(cat) {
-    return index.posts.filter((p) => (p.category || "미분류") === cat).length;
+    return index.posts.filter((p) => {
+      const c = p.category || "미분류";
+      return c === cat || c.startsWith(cat + "/");
+    }).length;
+  }
+
+  function hasChildren(cat) {
+    return index.categories.some((c) => c.startsWith(cat + "/"));
+  }
+
+  function renderCatParentSelect() {
+    const tops = index.categories.filter((c) => !c.includes("/"));
+    $("new-cat-parent").innerHTML =
+      `<option value="">최상위로 추가</option>` +
+      tops.map((c) => `<option value="${esc(c)}">${esc(c)} 아래에</option>`).join("");
   }
 
   function renderCats() {
+    renderCatParentSelect();
     const listEl = $("cats-list");
     if (!index.categories.length) {
       listEl.innerHTML = `<div class="empty-state"><p>아직 카테고리가 없어요. 위에서 추가해 보세요.</p></div>`;
       return;
     }
+    sortCats();
     listEl.innerHTML = index.categories
       .map((c) => {
+        const isChild = c.includes("/");
         const n = categoryUsage(c);
+        const blocked = n > 0 || hasChildren(c);
+        const blockedTitle =
+          n > 0 ? "글이 있는 카테고리는 삭제할 수 없어요" : "하위 카테고리가 있으면 삭제할 수 없어요";
         return `
-      <div class="manage-row" data-cat="${esc(c)}">
+      <div class="manage-row ${isChild ? "child-row" : ""}" data-cat="${esc(c)}">
         <div class="info">
-          <div class="title">${esc(c)}</div>
-          <div class="sub">글 ${n}개</div>
+          <div class="title">${esc(isChild ? c.split("/")[1] : c)}</div>
+          <div class="sub">글 ${n}개${isChild ? ` · ${esc(c.split("/")[0])}의 하위` : ""}</div>
         </div>
         <div class="row-actions">
-          <button class="btn btn-danger btn-sm" data-action="del-cat" ${n ? "disabled title='글이 있는 카테고리는 삭제할 수 없어요'" : ""}>삭제</button>
+          ${isChild ? "" : `<button class="btn btn-ghost btn-sm" data-action="add-child">+ 하위 추가</button>`}
+          <button class="btn btn-danger btn-sm" data-action="del-cat" ${blocked ? `disabled title="${blockedTitle}"` : ""}>삭제</button>
         </div>
       </div>`;
       })
@@ -136,24 +163,28 @@
 
   async function addCategory() {
     const name = $("new-cat").value.trim();
+    const parent = $("new-cat-parent").value;
     if (!name) return;
-    if (index.categories.includes(name)) return banner("error", "이미 있는 카테고리예요.");
+    if (name.includes("/")) return banner("error", "카테고리 이름에는 / 를 쓸 수 없어요.");
+    const path = parent ? `${parent}/${name}` : name;
+    if (index.categories.includes(path)) return banner("error", "이미 있는 카테고리예요.");
     try {
       banner("info", "카테고리 저장 중...");
-      index.categories.push(name);
-      await GH.putFile(INDEX_PATH, JSON.stringify(index, null, 2), `categories: ${name} 추가`);
+      index.categories.push(path);
+      sortCats();
+      await GH.putFile(INDEX_PATH, JSON.stringify(index, null, 2), `categories: ${path} 추가`);
       $("new-cat").value = "";
       renderCats();
-      banner("success", `"${esc(name)}" 카테고리를 추가했어요.`);
+      banner("success", `"${esc(Posts.catDisplay(path))}" 카테고리를 추가했어요.`);
     } catch (err) {
-      index.categories = index.categories.filter((c) => c !== name);
+      index.categories = index.categories.filter((c) => c !== path);
       banner("error", `저장 실패: ${esc(err.message)}`);
     }
   }
 
   async function removeCategory(name) {
-    if (categoryUsage(name)) return;
-    if (!confirm(`"${name}" 카테고리를 삭제할까요?`)) return;
+    if (categoryUsage(name) || hasChildren(name)) return;
+    if (!confirm(`"${Posts.catDisplay(name)}" 카테고리를 삭제할까요?`)) return;
     const before = index.categories;
     try {
       banner("info", "카테고리 저장 중...");
@@ -304,10 +335,14 @@
     $("slug-error").textContent = "";
 
     // 카테고리 선택란: 등록된 카테고리 + (수정 시) 이 글의 기존 카테고리
+    sortCats();
     const current = post ? post.category || "미분류" : "미분류";
     const options = [...new Set(["미분류", ...index.categories, current])];
     $("f-category").innerHTML = options
-      .map((c) => `<option value="${esc(c)}" ${c === current ? "selected" : ""}>${esc(c)}</option>`)
+      .map(
+        (c) =>
+          `<option value="${esc(c)}" ${c === current ? "selected" : ""}>${esc(Posts.catDisplay(c))}</option>`
+      )
       .join("");
 
     showView("editor");
@@ -466,12 +501,14 @@
         });
       }
       posts.sort((a, b) => (a.date < b.date ? 1 : -1));
-      const cats = [
-        ...new Set([
-          ...(index.categories || []),
-          ...posts.map((p) => p.category).filter((c) => c && c !== "미분류"),
-        ]),
-      ];
+      // 글에서 발견된 카테고리는 상위 경로까지 함께 등록
+      const fromPosts = posts
+        .map((p) => p.category)
+        .filter((c) => c && c !== "미분류")
+        .flatMap((c) => (c.includes("/") ? [c.split("/")[0], c] : [c]));
+      const cats = [...new Set([...(index.categories || []), ...fromPosts])].sort((a, b) =>
+        a.localeCompare(b, "ko")
+      );
       index = { version: 1, categories: cats, posts };
       banner("info", "index.json 커밋 중...");
       await GH.putFile(INDEX_PATH, JSON.stringify(index, null, 2), "index: 재빌드");
@@ -506,9 +543,14 @@
     if (e.key === "Enter") addCategory();
   });
   $("cats-list").addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-action='del-cat']");
+    const btn = e.target.closest("[data-action]");
     if (!btn || btn.disabled) return;
-    removeCategory(btn.closest(".manage-row").dataset.cat);
+    const cat = btn.closest(".manage-row").dataset.cat;
+    if (btn.dataset.action === "del-cat") removeCategory(cat);
+    if (btn.dataset.action === "add-child") {
+      $("new-cat-parent").value = cat;
+      $("new-cat").focus();
+    }
   });
   $("btn-logout").addEventListener("click", () => {
     if (!confirm("토큰을 이 브라우저에서 삭제할까요?")) return;

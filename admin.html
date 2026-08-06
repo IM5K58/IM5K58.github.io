@@ -80,8 +80,9 @@
           <button class="btn btn-ghost" id="btn-cats-back">← 목록으로</button>
         </div>
       </div>
-      <p class="admin-sub" style="margin-bottom:20px">여기서 만든 카테고리를 글 쓸 때 선택할 수 있어요. 글이 있는 카테고리는 삭제할 수 없습니다.</p>
+      <p class="admin-sub" style="margin-bottom:20px">여기서 만든 카테고리를 글 쓸 때 선택할 수 있어요. 상위 카테고리를 고르면 그 아래 하위 카테고리로 만들어집니다. 글이 있거나 하위가 있는 카테고리는 삭제할 수 없습니다.</p>
       <div class="cats-add">
+        <select id="new-cat-parent" title="상위 카테고리"></select>
         <input type="text" id="new-cat" placeholder="새 카테고리 이름" autocomplete="off">
         <button class="btn btn-primary" id="btn-add-cat">추가</button>
       </div>

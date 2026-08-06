@@ -111,7 +111,25 @@
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
-  max-width: 480px;
+  max-width: 620px;
+}
+
+.cats-add select {
+  flex: none;
+  width: 160px;
+  height: 44px;
+  padding: 0 10px;
+  font-size: 14px;
+  background: var(--bg-elevated);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+}
+
+/* 하위 카테고리 행 들여쓰기 */
+.manage-row.child-row {
+  margin-left: 28px;
 }
 
 .cats-add input {

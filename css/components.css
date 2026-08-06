@@ -97,6 +97,28 @@
   font-size: 12px;
 }
 
+/* 하위 카테고리 탭: 상위 탭 선택 시에만 표시되는 두 번째 줄 */
+.category-tabs.sub {
+  padding-top: 0;
+}
+
+.category-tabs.sub:empty {
+  display: none;
+}
+
+.category-tabs.sub .tab {
+  padding: 6px 13px;
+  font-size: 13px;
+  background: transparent;
+  border: 1.5px solid var(--border-strong);
+}
+
+.category-tabs.sub .tab.active {
+  color: var(--primary);
+  background: var(--primary-weak);
+  border-color: transparent;
+}
+
 /* ---------- 활성 태그 필터 표시 ---------- */
 .active-tag-bar {
   display: none;

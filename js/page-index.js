@@ -2,6 +2,7 @@
 (async () => {
   const listEl = document.getElementById("post-list");
   const tabsEl = document.getElementById("category-tabs");
+  const subTabsEl = document.getElementById("subcategory-tabs");
   const searchEl = document.getElementById("search-input");
   const tagBarEl = document.getElementById("active-tag-bar");
   const tagNameEl = document.getElementById("active-tag-name");
@@ -15,15 +16,33 @@
     return div.innerHTML;
   }
 
+  const tab = (label, value, count, active) => `
+    <button class="tab ${active ? "active" : ""}" data-category="${esc(value)}">
+      ${esc(label)}${count != null ? `<span class="count">${count}</span>` : ""}
+    </button>`;
+
   function renderTabs() {
-    const cats = Posts.categories(allPosts);
-    const tab = (label, value, count) => `
-      <button class="tab ${state.category === value ? "active" : ""}" data-category="${esc(value)}">
-        ${esc(label)}${count != null ? `<span class="count">${count}</span>` : ""}
-      </button>`;
+    const cats = Posts.categories(allPosts); // 상위 카테고리 (하위 글 수 포함)
+    const activeTop = state.category ? Posts.topOf(state.category) : "";
     tabsEl.innerHTML =
-      tab("전체", "", allPosts.length) +
-      cats.map(([c, n]) => tab(c, c, n)).join("");
+      tab("전체", "", allPosts.length, !state.category) +
+      cats.map(([c, n]) => tab(c, c, n, activeTop === c)).join("");
+    renderSubTabs();
+  }
+
+  // 선택된 상위 카테고리에 하위가 있으면 두 번째 탭 줄 표시
+  function renderSubTabs() {
+    const top = state.category ? Posts.topOf(state.category) : "";
+    const subs = top ? Posts.subcategories(allPosts, top) : [];
+    if (!subs.length) {
+      subTabsEl.innerHTML = "";
+      return;
+    }
+    subTabsEl.innerHTML =
+      tab("전체", top, null, state.category === top) +
+      subs
+        .map(([child, n]) => tab(child, `${top}/${child}`, n, state.category === `${top}/${child}`))
+        .join("");
   }
 
   function renderList() {
@@ -41,7 +60,7 @@
       <a class="post-card" href="/post.html?slug=${encodeURIComponent(p.slug)}">
         <div class="body">
           <div class="meta">
-            <span class="category">${esc(p.category || "미분류")}</span>
+            <span class="category">${esc(Posts.catDisplay(p.category))}</span>
             <span>·</span>
             <span>${Posts.formatDate(p.date)}</span>
           </div>
@@ -76,13 +95,15 @@
     }, 150);
   });
 
-  tabsEl.addEventListener("click", (e) => {
+  const onTabClick = (e) => {
     const btn = e.target.closest("[data-category]");
     if (!btn) return;
     state.category = btn.dataset.category;
     renderTabs();
     renderList();
-  });
+  };
+  tabsEl.addEventListener("click", onTabClick);
+  subTabsEl.addEventListener("click", onTabClick);
 
   listEl.addEventListener("click", (e) => {
     const chip = e.target.closest("[data-tag]");
