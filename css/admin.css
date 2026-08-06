@@ -375,6 +375,41 @@
   gap: 10px;
 }
 
+/* ---------- 에디터 사용법 ---------- */
+.editor-help {
+  margin: 12px auto 0;
+  max-width: 820px;
+  font-size: 13.5px;
+  color: var(--text-weak);
+}
+
+.editor-help summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 8px 0;
+  user-select: none;
+}
+
+.editor-help summary:hover {
+  color: var(--text-sub);
+}
+
+.editor-help ul {
+  margin: 4px 0 12px;
+  padding: 14px 18px 14px 34px;
+  background: var(--bg-soft);
+  border-radius: var(--radius-sm);
+  line-height: 1.9;
+  color: var(--text-sub);
+}
+
+.editor-help code {
+  padding: 1px 5px;
+  font-size: 0.9em;
+  background: var(--bg-elevated);
+  border-radius: 4px;
+}
+
 /* ---------- 상태 배너 ---------- */
 .banner {
   display: none;

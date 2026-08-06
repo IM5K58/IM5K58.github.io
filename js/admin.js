@@ -241,30 +241,32 @@
           blockConfirmButton: "확인",
         },
         [Crepe.Feature.BlockEdit]: {
+          // 라벨의 영문 병기는 "/h1", "/code" 같은 영문 검색도 매칭되게 하기 위함
+          // (슬래시 메뉴 필터가 라벨 문자열 포함 여부로 동작)
           textGroup: {
             label: "텍스트",
-            text: { label: "본문" },
-            h1: { label: "제목 1" },
-            h2: { label: "제목 2" },
-            h3: { label: "제목 3" },
-            h4: { label: "제목 4" },
+            text: { label: "본문 (text)" },
+            h1: { label: "제목 1 (h1)" },
+            h2: { label: "제목 2 (h2)" },
+            h3: { label: "제목 3 (h3)" },
+            h4: { label: "제목 4 (h4)" },
             h5: null,
             h6: null,
-            quote: { label: "인용구" },
-            divider: { label: "구분선" },
+            quote: { label: "인용구 (quote)" },
+            divider: { label: "구분선 (divider)" },
           },
           listGroup: {
             label: "목록",
-            bulletList: { label: "글머리 목록" },
-            orderedList: { label: "번호 목록" },
-            taskList: { label: "할 일 목록" },
+            bulletList: { label: "글머리 목록 (list)" },
+            orderedList: { label: "번호 목록 (number)" },
+            taskList: { label: "할 일 목록 (todo)" },
           },
           advancedGroup: {
             label: "블록",
-            image: { label: "이미지" },
-            codeBlock: { label: "코드 블록" },
-            table: { label: "표" },
-            math: { label: "수식 블록" },
+            image: { label: "이미지 (image)" },
+            codeBlock: { label: "코드 블록 (code)" },
+            table: { label: "표 (table)" },
+            math: { label: "수식 블록 (math)" },
           },
           buildMenu(builder) {
             // 콜아웃: 인용구 항목의 동작을 재사용하고 [!NOTE] 마커를 입력
@@ -272,7 +274,7 @@
             const quoteItem = textGroup.group.items.find((i) => i.key === "quote");
             if (!quoteItem) return;
             textGroup.addItem("callout", {
-              label: "콜아웃",
+              label: "콜아웃 (callout)",
               icon: `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 12h.01M11 12h6" stroke-linecap="round"/></svg>`,
               onRun: (ctx) => {
                 quoteItem.onRun(ctx);
