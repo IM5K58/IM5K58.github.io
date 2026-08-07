@@ -9,6 +9,20 @@
   ],
   "posts": [
     {
+      "slug": "2026-08-07-lstm-gru-compare",
+      "title": "LSTM vs. GRU",
+      "date": "2026-08-07T11:02:49+09:00",
+      "updated": "2026-08-07T11:02:49+09:00",
+      "category": "AI/DeepLearning",
+      "tags": [
+        "LSTM",
+        "GRU"
+      ],
+      "summary": "LSTM과 GRU를 한번에 비교한다.",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPPsRQMO49qzWbz68FMcvE5akG7EbG4TB8MrQ1EDSxxA&s=10",
+      "draft": false
+    },
+    {
       "slug": "2026-08-07-chaos-fractal-basic",
       "title": "카오스/프랙탈 이론",
       "date": "2026-08-07T09:24:39+09:00",
