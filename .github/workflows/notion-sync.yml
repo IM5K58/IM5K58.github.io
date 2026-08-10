@@ -1,0 +1,55 @@
+name: 노션 동기화
+
+on:
+  schedule:
+    # 15분마다 (GitHub 예약 실행은 혼잡 시 몇 분 지연될 수 있음)
+    - cron: "*/15 * * * *"
+  workflow_dispatch: # Actions 탭에서 수동 실행 (즉시 반영용)
+
+concurrency:
+  group: notion-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 아래 rebase 재시도를 위해 전체 히스토리 필요
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 의존성 설치
+        working-directory: tools/notion-sync
+        run: npm install --no-audit --no-fund
+
+      - name: 노션 → 마크다운 변환
+        working-directory: tools/notion-sync
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
+        run: node sync.js
+
+      - name: 변경분 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "변경 없음 — 커밋 생략"
+            exit 0
+          fi
+          git commit -m "notion: 글 동기화"
+          # admin에서 동시에 커밋했을 수 있으므로 재시도
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && exit 0
+            echo "push 재시도 $i"
+            sleep 5
+          done
+          exit 1

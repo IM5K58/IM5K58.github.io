@@ -1,0 +1,12 @@
+{
+  "name": "notion-sync",
+  "private": true,
+  "type": "module",
+  "description": "노션 DB → 블로그 마크다운 동기화 (GitHub Actions에서 주기 실행)",
+  "scripts": {
+    "sync": "node sync.js"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15"
+  }
+}

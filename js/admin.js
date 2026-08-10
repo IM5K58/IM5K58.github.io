@@ -93,13 +93,20 @@
         (p) => `
       <div class="manage-row" data-slug="${esc(p.slug)}">
         <div class="info">
-          <div class="title">${esc(p.title)}${p.draft ? '<span class="badge-draft">임시글</span>' : ""}</div>
+          <div class="title">${esc(p.title)}${p.draft ? '<span class="badge-draft">임시글</span>' : ""}${
+            p.source === "notion" ? '<span class="badge-notion">노션</span>' : ""
+          }</div>
           <div class="sub"><span class="category">${esc(Posts.catDisplay(p.category))}</span> · ${Posts.formatDate(p.date)} · ${esc(p.slug)}</div>
         </div>
         <div class="row-actions">
           <a class="btn btn-ghost btn-sm" href="/post.html?slug=${encodeURIComponent(p.slug)}" target="_blank">보기</a>
-          <button class="btn btn-ghost btn-sm" data-action="edit">수정</button>
-          <button class="btn btn-danger btn-sm" data-action="delete">삭제</button>
+          ${
+            // 노션이 원본인 글은 여기서 고치면 다음 동기화에 덮어써지므로 노션으로 보낸다
+            p.source === "notion"
+              ? `<a class="btn btn-primary btn-sm" href="${esc(p.notionUrl || "https://notion.so")}" target="_blank" rel="noopener">노션에서 편집 ↗</a>`
+              : `<button class="btn btn-ghost btn-sm" data-action="edit">수정</button>
+          <button class="btn btn-danger btn-sm" data-action="delete">삭제</button>`
+          }
         </div>
       </div>`
       )

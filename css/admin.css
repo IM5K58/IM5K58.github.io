@@ -224,6 +224,18 @@
   font-weight: 600;
 }
 
+.badge-notion {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-sub);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  vertical-align: 2px;
+}
+
 .badge-draft {
   display: inline-block;
   margin-left: 8px;

@@ -132,6 +132,29 @@
   border-top: 1px solid var(--border-strong);
 }
 
+/* ---------- 토글 (노션 toggle → details) ---------- */
+.prose details {
+  padding: 14px 20px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.prose details > summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--text-sub);
+  user-select: none;
+}
+
+.prose details > summary:hover {
+  color: var(--primary);
+}
+
+.prose details[open] > summary {
+  margin-bottom: 12px;
+}
+
 /* ---------- 수식 ---------- */
 .math-block {
   padding: 8px 0;

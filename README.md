@@ -13,6 +13,12 @@ GitHub Contents API로 직접 커밋하는 방식입니다.
   - 최초 1회 GitHub Fine-grained 토큰 등록 필요 (페이지 안내 참고)
   - 토큰 권한: 이 저장소만, `Contents: Read and write`만
 
+## 노션 연동
+
+노션 데이터베이스에 글을 쓰면 GitHub Actions가 15분마다 가져와 자동 발행한다.
+설정 방법은 [tools/notion-sync/README.md](tools/notion-sync/README.md) 참고.
+노션에서 온 글은 노션이 원본이라 admin에서 수정하지 않는다(다음 동기화에 덮어써짐).
+
 ## 구조
 
 ```
