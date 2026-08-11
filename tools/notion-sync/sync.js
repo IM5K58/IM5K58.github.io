@@ -99,7 +99,9 @@ function richText(rich) {
 
 /* ---------------- 블록 가져오기 ---------------- */
 
-async function fetchChildren(blockId) {
+const MAX_SUBPAGE_DEPTH = 2; // 하위 페이지를 따라 들어가는 최대 단계
+
+async function fetchChildren(blockId, pageDepth = 0) {
   const blocks = [];
   let cursor;
   do {
@@ -113,7 +115,10 @@ async function fetchChildren(blockId) {
   } while (cursor);
 
   for (const b of blocks) {
-    if (b.has_children) b.__children = await fetchChildren(b.id);
+    if (!b.has_children) continue;
+    const isSubPage = b.type === "child_page";
+    if (isSubPage && pageDepth >= MAX_SUBPAGE_DEPTH) continue; // 무한 중첩 방지
+    b.__children = await fetchChildren(b.id, pageDepth + (isSubPage ? 1 : 0));
   }
   return blocks;
 }
@@ -313,9 +318,17 @@ async function renderBlock(b, slug, indent, num) {
     case "synced_block":
       return await childMd("");
 
+    // 하위 페이지는 제목을 소제목으로 삼아 내용을 그 자리에 이어붙인다.
+    // (조용히 사라지면 글이 통째로 유실되므로)
+    case "child_page": {
+      const title = b.child_page?.title || "";
+      const inner = await childMd("");
+      if (!title && !inner) return null;
+      return inner ? `${indent}## ${title}\n\n${inner}` : `${indent}## ${title}`;
+    }
+
     case "table_of_contents":
     case "breadcrumb":
-    case "child_page":
     case "child_database":
     case "unsupported":
       return null;
