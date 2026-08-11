@@ -5,26 +5,45 @@
     "AI/DeepLearning",
     "AI/Vision",
     "Algorithm",
-    "Chaos"
+    "Chaos",
+    "Infra",
+    "Infra/Docker"
   ],
   "posts": [
+    {
+      "slug": "dkdkdkk",
+      "title": "test2",
+      "date": "2026-08-11T14:26:00+09:00",
+      "updated": "2026-08-11T14:27:00+09:00",
+      "category": "Infra/Docker",
+      "tags": [
+        "Docker"
+      ],
+      "summary": "doodoood",
+      "thumbnail": "",
+      "draft": false,
+      "source": "notion",
+      "notionId": "3b9f9dfb-8099-8032-bfb1-ebfb39041403",
+      "notionUrl": "https://app.notion.com/p/test2-3b9f9dfb80998032bfb1ebfb39041403",
+      "notionEdited": "2026-08-11T05:27:00.000Z"
+    },
     {
       "slug": "2026-08-11-lstm-2",
       "title": "테스트",
       "date": "2026-08-11T14:12:00+09:00",
-      "updated": "2026-08-11T14:17:00+09:00",
+      "updated": "2026-08-11T14:22:00+09:00",
       "category": "AI/DeepLearning",
       "tags": [
         "lstm",
         "test"
       ],
       "summary": "테스트를 진행한다.",
-      "thumbnail": "",
+      "thumbnail": "https://app.notion.com/images/page-cover/met_william_morris_1875.jpg",
       "draft": false,
       "source": "notion",
       "notionId": "3b9f9dfb-8099-8097-b434-cffa7f8ac48b",
       "notionUrl": "https://app.notion.com/p/3b9f9dfb80998097b434cffa7f8ac48b",
-      "notionEdited": "2026-08-11T05:17:00.000Z"
+      "notionEdited": "2026-08-11T05:22:00.000Z"
     },
     {
       "slug": "2026-08-07-lstm-1",
