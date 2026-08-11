@@ -376,6 +376,31 @@ function buildFrontmatter(meta) {
 
 /* ---------------- 메인 ---------------- */
 
+// DB를 못 찾을 때: 인테그레이션이 실제로 볼 수 있는 대상을 나열해준다.
+// 연결을 안 했으면 아무것도 안 나오고, ID를 잘못 넣었으면 올바른 ID가 보인다.
+async function diagnoseAccess() {
+  console.log("\n---- 진단: 이 인테그레이션이 볼 수 있는 항목 ----");
+  try {
+    const res = await notion().search({ page_size: 50 });
+    if (!res.results.length) {
+      console.log("(없음) → 노션에서 표 페이지의 [⋯ → 연결]에 인테그레이션을 추가해야 합니다.");
+      return;
+    }
+    for (const item of res.results) {
+      const title =
+        plainText(item.title) ||
+        plainText(Object.values(item.properties || {}).find((p) => p.type === "title")?.title) ||
+        "(제목 없음)";
+      console.log(`  [${item.object === "database" ? "DB" : "페이지"}] ${title}`);
+      console.log(`      id: ${item.id.replace(/-/g, "")}`);
+    }
+    console.log("\n위 목록에 [DB] 항목이 있으면 그 id 를 NOTION_DB_ID 로 넣으세요.");
+    console.log("[페이지]만 보인다면 표(데이터베이스)가 아니라 페이지를 연결한 것입니다.");
+  } catch (err) {
+    console.log("진단 실패:", err.message);
+  }
+}
+
 async function queryPublishedPages() {
   const pages = [];
   let cursor;
@@ -424,7 +449,16 @@ async function main() {
   }
 
   console.log("노션 DB 조회 중...");
-  const pages = await queryPublishedPages();
+  let pages;
+  try {
+    pages = await queryPublishedPages();
+  } catch (err) {
+    if (err.code === "object_not_found" || err.code === "unauthorized") {
+      console.error(`\nDB에 접근할 수 없습니다: ${err.message}`);
+      await diagnoseAccess();
+    }
+    throw err;
+  }
   console.log(`발행 대상 ${pages.length}개`);
 
   const index = JSON.parse(await fs.readFile(INDEX_PATH, "utf8"));
