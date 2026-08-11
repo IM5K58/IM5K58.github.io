@@ -112,14 +112,6 @@ const Render = (() => {
   }
 
   // 렌더 후처리: 코드 하이라이팅 + 외부 링크 새 탭 + 콜아웃 변환
-  const CALLOUT_TITLES = {
-    note: "참고",
-    tip: "팁",
-    important: "중요",
-    warning: "주의",
-    caution: "경고",
-  };
-
   function enhance(rootEl) {
     rootEl.querySelectorAll("pre code").forEach((el) => {
       if (window.hljs) hljs.highlightElement(el);
@@ -131,22 +123,18 @@ const Render = (() => {
       }
     });
 
-    // 콜아웃: "> [!NOTE] 내용" 형태의 인용구를 색상 박스로 변환
+    // 콜아웃: "> [!NOTE] 내용" 형태의 인용구를 색상 박스로 변환.
+    // 종류 표시는 색으로만 하고 라벨은 붙이지 않는다 (노션 원본에 없는 글자라서)
     rootEl.querySelectorAll("blockquote").forEach((bq) => {
       const first = bq.querySelector(":scope > p:first-child");
       if (!first) return;
       const m = first.textContent.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i);
       if (!m) return;
-      const type = m[1].toLowerCase();
 
       first.innerHTML = first.innerHTML.replace(/^\s*\[!\w+\]\s*(<br\s*\/?>\s*)?/i, "");
       if (!first.textContent.trim() && !first.children.length) first.remove();
 
-      bq.classList.add("callout", `callout-${type}`);
-      const title = document.createElement("p");
-      title.className = "callout-title";
-      title.textContent = CALLOUT_TITLES[type];
-      bq.prepend(title);
+      bq.classList.add("callout", `callout-${m[1].toLowerCase()}`);
     });
   }
 

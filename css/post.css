@@ -176,24 +176,6 @@
   color: var(--text);
 }
 
-.prose .callout-title {
-  font-weight: 800;
-  font-size: 14.5px;
-  color: var(--co-color);
-  margin-bottom: 4px;
-}
-
-.prose .callout-title::before {
-  content: "";
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin-right: 8px;
-  border-radius: 50%;
-  background: var(--co-color);
-  vertical-align: 1px;
-}
-
 .prose .callout-tip {
   --co-color: #12b76a;
   --co-bg: #e9f9f1;
