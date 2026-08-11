@@ -525,7 +525,15 @@ async function main() {
     const blocks = await fetchChildren(page.id);
     const body = await renderBlocks(blocks, slug);
 
-    let thumbnail = propText(page, "thumbnail");
+    // 썸네일: 속성(URL/파일) → 없으면 페이지 커버 순으로 찾는다.
+    // 노션에 업로드된 파일은 URL이 만료되므로 반드시 내려받아야 한다.
+    let thumbnail = "";
+    const thumbProp = prop(page, "thumbnail");
+    if (thumbProp?.type === "url") thumbnail = thumbProp.url || "";
+    else if (thumbProp?.type === "rich_text") thumbnail = plainText(thumbProp.rich_text);
+    else if (thumbProp?.type === "files" && thumbProp.files?.[0]) {
+      thumbnail = await resolveImage(thumbProp.files[0], slug);
+    }
     if (!thumbnail && page.cover) thumbnail = await resolveImage(page.cover, slug);
 
     const tagsProp = prop(page, "tags");
