@@ -169,11 +169,21 @@
 .prose .callout {
   --co-color: var(--primary);
   --co-bg: var(--primary-weak);
-  padding: 16px 20px;
+  padding: 12px 20px;
   background: var(--co-bg);
   border-left: 3px solid var(--co-color);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   color: var(--text);
+}
+
+/* 줄 높이(1.85)가 첫 줄 위·끝 줄 아래에 만드는 여분 공간을 걷어내
+   실제 여백이 위 padding 값과 일치하게 한다 */
+.prose .callout > :first-child {
+  margin-top: -0.3em;
+}
+
+.prose .callout > :last-child {
+  margin-bottom: -0.3em;
 }
 
 .prose .callout-tip {
