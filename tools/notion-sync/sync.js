@@ -401,12 +401,37 @@ async function diagnoseAccess() {
   }
 }
 
-async function queryPublishedPages() {
+// NOTION_DB_ID 에 표 ID 대신 그 표를 담고 있는 페이지 ID를 넣기 쉬우므로,
+// 페이지가 들어오면 그 안의 표를 찾아 대신 사용한다.
+async function resolveDatabaseId(id) {
+  try {
+    await notion().databases.retrieve({ database_id: id });
+    return id;
+  } catch (err) {
+    if (err.code !== "validation_error" && err.code !== "object_not_found") throw err;
+  }
+
+  try {
+    const res = await notion().blocks.children.list({ block_id: id, page_size: 100 });
+    const db = res.results.find((b) => b.type === "child_database");
+    if (db) {
+      const name = db.child_database.title || "(제목 없음)";
+      console.log(`입력한 ID는 페이지였습니다 → 그 안의 표 "${name}" 를 사용합니다.`);
+      console.log(`  (NOTION_DB_ID 를 ${db.id.replace(/-/g, "")} 로 바꿔두면 이 단계가 생략됩니다)`);
+      return db.id;
+    }
+  } catch (err) {
+    console.log(`페이지 내부 조회 실패: ${err.message}`);
+  }
+  return null;
+}
+
+async function queryPublishedPages(databaseId) {
   const pages = [];
   let cursor;
   do {
     const res = await notion().databases.query({
-      database_id: NOTION_DB_ID,
+      database_id: databaseId,
       start_cursor: cursor,
       page_size: 100,
     });
@@ -449,11 +474,18 @@ async function main() {
   }
 
   console.log("노션 DB 조회 중...");
+  const databaseId = await resolveDatabaseId(NOTION_DB_ID);
+  if (!databaseId) {
+    console.error("\nNOTION_DB_ID 로 표(데이터베이스)를 찾지 못했습니다.");
+    await diagnoseAccess();
+    throw new Error("데이터베이스를 찾을 수 없음");
+  }
+
   let pages;
   try {
-    pages = await queryPublishedPages();
+    pages = await queryPublishedPages(databaseId);
   } catch (err) {
-    if (err.code === "object_not_found" || err.code === "unauthorized") {
+    if (["object_not_found", "unauthorized", "validation_error"].includes(err.code)) {
       console.error(`\nDB에 접근할 수 없습니다: ${err.message}`);
       await diagnoseAccess();
     }
