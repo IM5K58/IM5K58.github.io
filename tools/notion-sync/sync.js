@@ -77,6 +77,15 @@ function toKstIso(input) {
 
 /* ---------------- 리치 텍스트 → 마크다운 ---------------- */
 
+// 마크다운은 닫는 기호 바로 앞이 공백이면 서식으로 인식하지 않는다.
+// (노션에서 "끌개 " 처럼 공백까지 굵게 잡으면 `**끌개 **` 가 되어 글자 그대로 나옴)
+// → 앞뒤 공백을 기호 바깥으로 빼낸다.
+function emphasize(s, marker) {
+  const [, lead, core, trail] = s.match(/^(\s*)([\s\S]*?)(\s*)$/);
+  if (!core) return s; // 공백뿐이면 서식을 걸지 않는다
+  return `${lead}${marker}${core}${marker}${trail}`;
+}
+
 function richText(rich) {
   return (rich || [])
     .map((t) => {
@@ -87,9 +96,9 @@ function richText(rich) {
       // 코드가 가장 안쪽 — 코드 안에서는 다른 서식이 의미 없다
       if (a.code) s = `\`${s}\``;
       else {
-        if (a.bold) s = `**${s}**`;
-        if (a.italic) s = `*${s}*`;
-        if (a.strikethrough) s = `~~${s}~~`;
+        if (a.bold) s = emphasize(s, "**");
+        if (a.italic) s = emphasize(s, "*");
+        if (a.strikethrough) s = emphasize(s, "~~");
       }
       if (t.href) s = `[${s}](${t.href})`;
       return s;
@@ -98,6 +107,10 @@ function richText(rich) {
 }
 
 /* ---------------- 블록 가져오기 ---------------- */
+
+// 변환 규칙을 고치면 이 번호를 올린다. 그러면 노션에서 안 고친 글도
+// 다음 동기화 때 한 번 다시 변환된다.
+const CONVERTER_VERSION = 2;
 
 const MAX_SUBPAGE_DEPTH = 2; // 하위 페이지를 따라 들어가는 최대 단계
 
@@ -524,8 +537,12 @@ async function main() {
     seenSlugs.add(slug);
 
     const prev = existing.get(slug);
-    // 수정 시각이 그대로면 본문을 다시 받지 않는다
-    if (prev && prev.notionEdited === page.last_edited_time) {
+    // 수정 시각이 그대로이고 변환 규칙도 그대로면 본문을 다시 받지 않는다
+    if (
+      prev &&
+      prev.notionEdited === page.last_edited_time &&
+      prev.syncVersion === CONVERTER_VERSION
+    ) {
       synced.push(prev);
       console.log(`= ${title} (변경 없음)`);
       continue;
@@ -566,6 +583,7 @@ async function main() {
       notionId: page.id,
       notionUrl: page.url,
       notionEdited: page.last_edited_time,
+      syncVersion: CONVERTER_VERSION,
     };
 
     await fs.writeFile(
