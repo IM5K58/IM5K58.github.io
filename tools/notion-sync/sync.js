@@ -410,8 +410,16 @@ function slugOf(page) {
 
 async function main() {
   if (!NOTION_TOKEN || !NOTION_DB_ID) {
-    console.log("NOTION_TOKEN / NOTION_DB_ID 가 설정되지 않아 동기화를 건너뜁니다.");
-    console.log("설정 방법은 tools/notion-sync/README.md 참고.");
+    // 둘 중 무엇이 비었는지 알려줘야 설정 실수를 바로 찾을 수 있다
+    console.log("동기화를 건너뜁니다. 설정 상태:");
+    console.log(`  NOTION_TOKEN : ${NOTION_TOKEN ? "OK" : "없음"}`);
+    console.log(`  NOTION_DB_ID : ${NOTION_DB_ID ? "OK" : "없음"}`);
+    console.log("");
+    console.log("확인할 것:");
+    console.log("  1. Settings → Secrets and variables → Actions 의 [Secrets] 탭인지");
+    console.log("     ([Variables] 탭에 넣으면 인식되지 않습니다)");
+    console.log("  2. 이름이 정확히 NOTION_TOKEN / NOTION_DB_ID 인지 (대소문자·공백)");
+    console.log("  3. 시크릿을 등록한 뒤에 실행한 것인지 (등록 전 실행은 반영 안 됨)");
     return;
   }
 
