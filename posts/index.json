@@ -11,6 +11,42 @@
   ],
   "posts": [
     {
+      "slug": "rnn-1",
+      "title": "RNN (1)",
+      "date": "2026-08-14T14:35:00+09:00",
+      "updated": "2026-08-14T14:43:00+09:00",
+      "category": "AI/DeepLearning",
+      "tags": [
+        "RNN"
+      ],
+      "summary": "RNN 1편",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxMMsdcj-dQosrudLxBXbTQ3ok6JdIKtVAW6h8RhEORw&s=10",
+      "draft": false,
+      "source": "notion",
+      "notionId": "3bcf9dfb-8099-8017-a95e-dc99469f6bac",
+      "notionUrl": "https://app.notion.com/p/RNN-1-3bcf9dfb80998017a95edc99469f6bac",
+      "notionEdited": "2026-08-14T05:43:00.000Z",
+      "syncVersion": 2
+    },
+    {
+      "slug": "lstm-1",
+      "title": "LSTM (1)",
+      "date": "2026-08-14T13:54:00+09:00",
+      "updated": "2026-08-14T14:36:00+09:00",
+      "category": "AI/DeepLearning",
+      "tags": [
+        "LSTM"
+      ],
+      "summary": "LSTM 1편",
+      "thumbnail": "",
+      "draft": false,
+      "source": "notion",
+      "notionId": "3bcf9dfb-8099-8004-bb4e-faab83079da6",
+      "notionUrl": "https://app.notion.com/p/LSTM-1-3bcf9dfb80998004bb4efaab83079da6",
+      "notionEdited": "2026-08-14T05:36:00.000Z",
+      "syncVersion": 2
+    },
+    {
       "slug": "2026-08-07-lstm-gru-compare",
       "title": "LSTM vs. GRU",
       "date": "2026-08-07T11:02:49+09:00",
