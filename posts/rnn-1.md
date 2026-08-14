@@ -1,7 +1,7 @@
 ---
 title: "RNN (1)"
 date: 2026-08-14T14:35:00+09:00
-updated: 2026-08-14T14:43:00+09:00
+updated: 2026-08-14T14:56:00+09:00
 category: AI/DeepLearning
 tags: [RNN]
 summary: "RNN 1편"
@@ -18,20 +18,22 @@ notionUrl: https://app.notion.com/p/RNN-1-3bcf9dfb80998017a95edc99469f6bac
 
 ![image](/assets/images/notion/rnn-1/5b83c7d287c9.png)
 
+사진 - [https://colah.github.io/posts/2015-08-Understanding-LSTMs/](https://colah.github.io/posts/2015-08-Understanding-LSTMs/)
+
 위 그림이 RNN의 대략적인 구조를 표현한 것이다.
 
 각 시점마다 그 시점의 입력인 $x_t$가 들어가고, 출력으로 
 
 [https://claude.ai/public/artifacts/2fa9d021-f7cc-4c2b-8689-9b1680c60c07](https://claude.ai/public/artifacts/2fa9d021-f7cc-4c2b-8689-9b1680c60c07)
 
-이해한것. RNN은 어떤 신경망 자체라기 보다는, 신경망을 시간의 흐름에 따라, 이전 값을 현재 시점에 입력으로 또 넣는 방식으로 가보자! 하는 구조적인 발상인거임.
+RNN은 어떤 신경망 자체라기 보다는, 신경망을 시간의 흐름에 따라, 이전 값을 현재 시점에 입력으로 또 넣는 방식으로 가보자! 하는 구조적인 발상인거임.
 위 사진에서 보이는 구조가 RNN인 거고, A는 그냥 다른 모델, 다른 NN.
 
-그래서 그 NN을 계속 시간의 흐름에 따라 배치하는 것이고
+그래서 그 NN을 계속 시간의 흐름에 따라 배치하는 것..
 
 핵심은 ‘은닉 상태’라고 부르는 h_t. 이 h_t가 각 시점마다 각 A에서 계산되고, 이 h_t가 그 시점의 출력인 y_t로 변환될 지, 아니면 h_t인 상태로 다음 시점의 입력으로 들어갈지는 학습 과정에 따라 달라짐.
 
-RNN에서 은닉층에서 활성화 함수를 통해 결과를 내보내는 역할을 하는 노드를 셀(cell)이라고한다.
+RNN에서 은닉층에서 활성화 함수를 통해 결과를 내보내는 역할을 하는 노드를 셀(cell)이라고한다. 즉, 위에서 말한 A = cell.
 
 이 셀은 이전의 값을 기억하려고 하는 일종의 메모리 역할을 수행하므로 이를 **메모리 셀** 또는 **RNN 셀**이라고 표현한다.
 
@@ -42,6 +44,8 @@ RNN에서 은닉층에서 활성화 함수를 통해 결과를 내보내는 역�
 더 명확한 사진으로 보자.
 
 ![image](/assets/images/notion/rnn-1/1dd4cf22f110.png)
+
+사진 - [https://wikidocs.net/22886](https://wikidocs.net/22886)
 
 기본 구조는 이렇다고 보면된다.
 
@@ -70,15 +74,17 @@ $W$ = 가중치이고, 이는 행렬 형태로 표현됨.
 
 ![image](/assets/images/notion/rnn-1/7dcdd07506a3.png)
 
+사진 - [https://wikidocs.net/22886](https://wikidocs.net/22886)
+
 $h_t$를 계산하기 위한 활성화 함수로는 주로 하이퍼볼릭탄젠트 함수(tanh)가 사용된다.
 
 출력층은 결과값인 $y_t$를 계산하기 위한 활성화 함수로는 푸는 문제에 따라서 다를텐데, 예를 들어서 이진 분류를 해야하는 경우라면 출력층에 로지스틱 회귀를 사용하여 시그모이드 함수를 사용할 수 있고 다중 클래스 분류를 해야하는 경우라면 출력층에 소프트맥스 회귀를 사용하여 소프트 맥스 함수를 사용할 수 있다.
 
 읽는 법
 
-* **W_xh** = x에서 h로
-* **W_hh** = h에서 h로
-* **W_hy** = h에서 y로 변환하는 가중치
+* $W_{xh}$ = x에서 h로
+* $W_{hh}$ = h에서 h로
+* $W_{hy}$ = h에서 y로 변환하는 가중치
 
 > [!TIP]
 > ## 참고자료
@@ -88,3 +94,7 @@ $h_t$를 계산하기 위한 활성화 함수로는 주로 하이퍼볼릭탄젠
 [https://www.kim2kie.com/res/html/0_formula/00%20AI/DL_RNN.html](https://www.kim2kie.com/res/html/0_formula/00%20AI/DL_RNN.html)
 
 [https://casa-de-feel.tistory.com/39](https://casa-de-feel.tistory.com/39)
+
+[https://velog.io/@bansohi/NLP-%EC%88%9C%ED%99%98-%EC%8B%A0%EA%B2%BD%EB%A7%9D-RNN-%EC%97%90-%EB%8C%80%ED%95%98%EC%97%AC](https://velog.io/@bansohi/NLP-%EC%88%9C%ED%99%98-%EC%8B%A0%EA%B2%BD%EB%A7%9D-RNN-%EC%97%90-%EB%8C%80%ED%95%98%EC%97%AC)
+
+[https://colah.github.io/posts/2015-08-Understanding-LSTMs/](https://colah.github.io/posts/2015-08-Understanding-LSTMs/)
