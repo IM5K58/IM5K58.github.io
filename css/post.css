@@ -176,14 +176,47 @@
   color: var(--text);
 }
 
-/* 줄 높이(1.85)가 첫 줄 위·끝 줄 아래에 만드는 여분 공간을 걷어내
-   실제 여백이 위 padding 값과 일치하게 한다 */
+/* 인용구·콜아웃 안의 제목은 본문 섹션 제목이 아니므로
+   구분선(밑줄)과 큰 여백을 없앤다 — 안 그러면 아래쪽만 벌어져 보인다 */
+.prose blockquote :is(h1, h2, h3, h4) {
+  margin-top: 0.8em;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* 줄 높이가 첫 줄 위·끝 줄 아래에 만드는 여분을 걷어낸다.
+   em이 아닌 고정값이어야 자식이 문단이든 제목이든 위아래가 같아진다 */
 .prose .callout > :first-child {
-  margin-top: -0.3em;
+  margin-top: -5px;
 }
 
 .prose .callout > :last-child {
-  margin-bottom: -0.3em;
+  margin-bottom: -5px;
+}
+
+/* 글자가 줄 상자 안에서 위아래 비대칭으로 놓이는 것까지 걷어내
+   위/아래 여백이 padding 값과 정확히 일치하게 한다.
+   미지원 브라우저는 위의 고정 마진으로 근사 처리된다 */
+@supports (text-box-trim: trim-both) {
+  .prose .callout > :first-child,
+  .prose .callout > :last-child {
+    margin-top: 0;
+    margin-bottom: 0;
+    text-box-edge: cap alphabetic;
+  }
+
+  .prose .callout > :first-child {
+    text-box-trim: trim-start;
+  }
+
+  .prose .callout > :last-child {
+    text-box-trim: trim-end;
+  }
+
+  /* 자식이 하나뿐이면 위아래 모두 다듬어야 한다 */
+  .prose .callout > :first-child:last-child {
+    text-box-trim: trim-both;
+  }
 }
 
 .prose .callout-tip {
