@@ -146,7 +146,12 @@
   padding-bottom: 40px;
 }
 
+/* 카드마다 --cat-hue(카테고리 색상각)가 인라인으로 들어온다.
+   그 값에서 강조색과 옅은 배경색을 만들어 카드 전체가 한 색으로 묶이게 한다. */
 .post-card {
+  --cat: oklch(56% 0.17 var(--cat-hue, 258));
+  --cat-weak: oklch(96.2% 0.03 var(--cat-hue, 258));
+
   display: flex;
   gap: 20px;
   padding: 24px;
@@ -157,15 +162,22 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
+[data-theme="dark"] .post-card {
+  --cat: oklch(74% 0.14 var(--cat-hue, 258));
+  --cat-weak: oklch(27.5% 0.05 var(--cat-hue, 258));
+}
+
 .post-card:hover {
   transform: translateY(-3px);
   box-shadow: var(--elevation-2);
-  border-color: var(--border-strong);
+  border-color: color-mix(in oklch, var(--cat) 35%, var(--border-strong));
 }
 
 .post-card .body {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .post-card .meta {
@@ -177,9 +189,35 @@
   margin-bottom: 8px;
 }
 
+/* 카테고리는 고유 색 + 앞의 점으로 표시해 목록을 훑을 때 구분이 되게 한다 */
 .post-card .meta .category {
-  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cat);
   font-weight: 700;
+}
+
+.post-card .meta .category::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cat);
+}
+
+.post-card .meta-sep {
+  color: var(--border-strong);
+}
+
+.badge-new {
+  padding: 1.5px 7px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--cat);
+  background: var(--cat-weak);
+  border-radius: var(--radius-full);
 }
 
 .post-card h2 {
@@ -188,10 +226,11 @@
   letter-spacing: -0.02em;
   line-height: 1.4;
   margin-bottom: 8px;
+  transition: color 0.15s ease;
 }
 
 .post-card:hover h2 {
-  color: var(--primary);
+  color: var(--cat);
 }
 
 .post-card .summary {
@@ -203,6 +242,46 @@
   overflow: hidden;
 }
 
+.post-card .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+/* 카드 안 태그는 카테고리 색을 따라가 카드가 한 덩어리로 보이게 한다 */
+.post-card .tag-chip {
+  color: var(--cat);
+  background: var(--cat-weak);
+}
+
+/* 카드가 링크임을 알려주는 표시. 평소엔 옅게, 호버 시 카테고리 색으로 */
+.card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 14px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-weak);
+  transition: color 0.15s ease;
+}
+
+.card-cta svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.18s ease;
+}
+
+.post-card:hover .card-cta {
+  color: var(--cat);
+}
+
+.post-card:hover .card-cta svg {
+  transform: translateX(3px);
+}
+
 .post-card .thumb {
   flex: none;
   width: 130px;
@@ -212,11 +291,17 @@
   background: var(--bg-elevated);
 }
 
-.post-card .tags {
+/* 썸네일이 없는 글은 카테고리 색 타일로 대신한다.
+   .post-card .thumb 의 배경을 이겨야 하므로 선택자를 같은 깊이로 맞춘다 */
+.post-card .thumb-empty {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 14px;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--cat);
+  background: var(--cat-weak);
 }
 
 /* ---------- 태그 칩 (공용) ---------- */
@@ -447,4 +532,21 @@
   .nav-link {
     padding: 8px;
   }
+}
+
+/* 아카이브 행도 홈 카드와 같은 카테고리 색 체계를 쓴다 */
+.archive-row {
+  --cat: oklch(56% 0.17 var(--cat-hue, 258));
+}
+
+[data-theme="dark"] .archive-row {
+  --cat: oklch(74% 0.14 var(--cat-hue, 258));
+}
+
+.archive-row .archive-cat {
+  color: var(--cat);
+}
+
+.archive-row:hover .archive-title {
+  color: var(--cat);
 }

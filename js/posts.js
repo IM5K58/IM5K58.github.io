@@ -11,6 +11,7 @@ const Posts = (() => {
     cache = (data.posts || [])
       .filter((p) => p && p.slug && p.title)
       .sort((a, b) => (a.date < b.date ? 1 : -1));
+    buildHueMap(cache);
     return cache;
   }
 
@@ -69,6 +70,34 @@ const Posts = (() => {
     });
   }
 
+  // 카테고리마다 고유한 색을 준다. 이름을 해시해 고정 팔레트에서 고르므로
+  // 새 카테고리가 생겨도 설정 없이 자동으로 색이 정해지고, 항상 같은 색을 유지한다.
+  // 상위 카테고리 기준이라 AI/DeepLearning 과 AI/Vision 은 같은 계열로 묶인다.
+  const CAT_HUES = [258, 300, 350, 25, 70, 145, 190, 220];
+
+  // 이름 해시로 색을 고르면 카테고리가 몇 개 없을 때 서로 겹친다
+  // (실제로 "AI"와 "Chaos"가 같은 색이 됐다). 대신 상위 카테고리를
+  // 가나다순으로 줄 세워 팔레트를 차례로 배정한다 — 8개까지 겹치지 않는다.
+  let hueMap = null;
+
+  function buildHueMap(posts) {
+    const tops = [...new Set(posts.map((p) => topOf(p.category)))].sort((a, b) =>
+      a.localeCompare(b, "ko")
+    );
+    hueMap = new Map(tops.map((t, i) => [t, CAT_HUES[i % CAT_HUES.length]]));
+  }
+
+  function catHue(path) {
+    return hueMap?.get(topOf(path)) ?? CAT_HUES[0];
+  }
+
+  // 최근 2주 안에 올린 글은 목록에서 표시해 준다
+  function isNew(iso, days = 14) {
+    const t = new Date(iso).getTime();
+    if (isNaN(t)) return false;
+    return Date.now() - t < days * 86400000;
+  }
+
   function formatDate(iso) {
     const d = new Date(iso);
     if (isNaN(d)) return "";
@@ -83,6 +112,8 @@ const Posts = (() => {
     subcategories,
     topOf,
     catDisplay,
+    catHue,
+    isNew,
     filter,
     formatDate,
   };

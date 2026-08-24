@@ -57,12 +57,13 @@
     listEl.innerHTML = posts
       .map(
         (p) => `
-      <a class="post-card" href="/post.html?slug=${encodeURIComponent(p.slug)}">
+      <a class="post-card" style="--cat-hue: ${Posts.catHue(p.category)}" href="/post.html?slug=${encodeURIComponent(p.slug)}">
         <div class="body">
           <div class="meta">
             <span class="category">${esc(Posts.catDisplay(p.category))}</span>
-            <span>·</span>
+            <span class="meta-sep">·</span>
             <span>${Posts.formatDate(p.date)}</span>
+            ${Posts.isNew(p.date) ? `<span class="badge-new">New</span>` : ""}
           </div>
           <h2>${esc(p.title)}</h2>
           <p class="summary">${esc(p.summary || "")}</p>
@@ -73,8 +74,13 @@
                   .join("")}</div>`
               : ""
           }
+          <span class="card-cta">글 읽기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
         </div>
-        ${p.thumbnail ? `<img class="thumb" src="${esc(p.thumbnail)}" alt="" loading="lazy">` : ""}
+        ${
+          p.thumbnail
+            ? `<img class="thumb" src="${esc(p.thumbnail)}" alt="" loading="lazy">`
+            : `<span class="thumb thumb-empty" aria-hidden="true">${esc(Posts.topOf(p.category).slice(0, 2))}</span>`
+        }
       </a>`
       )
       .join("");
