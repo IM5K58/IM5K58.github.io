@@ -73,19 +73,6 @@
       "summary": "카오스와 프랙탈이론에 대한 간략한 정리",
       "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTw6SueK5GMN0DeL59WMcEKRmYCOIxp9Vb93P5D2n38Uw&s=10",
       "draft": false
-    },
-    {
-      "slug": "2026-08-06-rnn-1",
-      "title": "RNN (1)",
-      "date": "2026-08-06T13:31:21+09:00",
-      "updated": "2026-08-07T09:21:01+09:00",
-      "category": "AI/DeepLearning",
-      "tags": [
-        "RNN"
-      ],
-      "summary": "RNN 개념 익히기",
-      "thumbnail": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Recurrent_neural_network_unfold.svg",
-      "draft": false
     }
   ]
 }
