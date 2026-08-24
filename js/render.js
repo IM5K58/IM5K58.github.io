@@ -1,3 +1,4 @@
+// @ts-check
 // 마크다운 → 안전한 HTML 렌더 파이프라인 + frontmatter 파서
 const Render = (() => {
   // frontmatter: 문서 맨 앞의 --- ... --- 블록. key: value 단순 문법만 지원.

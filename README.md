@@ -22,16 +22,31 @@ GitHub Contents API로 직접 커밋하는 방식입니다.
 ## 구조
 
 ```
-index.html / post.html / admin.html / 404.html
-css/    theme.css(디자인 토큰) base.css components.css post.css admin.css
-js/     config.js(전역 설정) theme.js(다크모드) posts.js render.js
-        github-api.js(Contents API 래퍼) admin.js page-index.js page-post.js
-posts/  index.json(글 목록 매니페스트) + {slug}.md(글 본문, frontmatter 포함)
-assets/ images/{yyyy}/{mm}/(업로드 이미지), favicon.svg
+index.html      홈 (최신 글 목록 · 검색 · 카테고리 필터)
+post.html       글 상세 (?slug=...)
+archive.html    전체 글을 연도별로
+admin.html      글 관리 (작성 · 수정 · 삭제)
+404.html
+
+css/     theme.css(디자인 토큰) base.css components.css post.css admin.css
+js/      config.js(전역 설정) theme.js(다크모드) posts.js(목록·필터)
+         render.js(마크다운→HTML) github-api.js(Contents API 래퍼)
+         page-index.js page-post.js page-archive.js admin.js
+posts/   index.json(글 목록 매니페스트) + {slug}.md(frontmatter 포함)
+assets/  images/(업로드 이미지) vendor/(에디터 번들) favicon.svg
+tools/   notion-sync/(노션 → md 변환) editor-build/(에디터 번들 빌드)
+.github/workflows/notion-sync.yml   15분마다 노션 동기화
 ```
 
-- 라이브러리는 전부 CDN: Toast UI Editor(에디터), marked(마크다운),
-  DOMPurify(XSS 방어), highlight.js(코드 하이라이팅), Pretendard(폰트)
+**에디터는 CDN이 아니라 로컬 번들입니다.** admin의 노션식 에디터는
+[Milkdown Crepe](https://milkdown.dev)를 `tools/editor-build`에서 esbuild로 묶어
+`assets/vendor/editor.bundle.js`로 커밋한 것을 씁니다. CDN 런타임 번들러(esm.sh 등)가
+codemirror 의존성과 CSS `@import`를 깨뜨려서 이 방식이 됐습니다.
+에디터 버전을 올릴 때만 재빌드하며, 방법은 [tools/editor-build/README.md](tools/editor-build/README.md)에 있습니다.
+
+CDN에서 받는 것은 공개 페이지용 네 가지뿐입니다 — marked(마크다운), DOMPurify(XSS 방어),
+KaTeX(수식), Pretendard(폰트). 전부 버전을 고정하고 SRI 무결성 해시를 붙였습니다.
+
 - 댓글은 giscus — 사용하려면 저장소 Discussions 활성화 + [giscus 앱](https://github.com/apps/giscus)
   설치 후 https://giscus.app 에서 받은 값을 `js/config.js`에 기입
 
@@ -40,3 +55,11 @@ assets/ images/{yyyy}/{mm}/(업로드 이미지), favicon.svg
 ```
 python -m http.server 8000
 ```
+
+의존성 설치가 필요 없습니다. 사이트 자체에는 빌드 단계가 없고,
+`tools/` 아래 두 도구만 Node를 씁니다.
+
+## 설계 기록
+
+무엇을 **하지 않기로 했는지**와 그 결정을 뒤집을 조건은
+[docs/decisions.md](docs/decisions.md)에 있습니다.

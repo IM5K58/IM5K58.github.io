@@ -1,7 +1,12 @@
+// @ts-check
 // 관리자 페이지: 토큰 인증 → 글 목록 관리 → 작성/수정/삭제 (GitHub API 커밋)
 (() => {
   const INDEX_PATH = "posts/index.json";
 
+  // 이 헬퍼는 input·select·button·div를 두루 반환해서 하나의 정확한 타입을
+  // 줄 수 없다. 여기서만 검사를 느슨하게 두고, 대신 널 역참조·잘못된 인자 같은
+  // 로직 쪽 검사는 살린다.
+  /** @type {(id: string) => any} */
   const $ = (id) => document.getElementById(id);
   const views = {
     login: $("login-view"),
@@ -15,6 +20,7 @@
   let crepe = null; // Crepe 에디터 인스턴스
   let CrepeLib = null; // 동적 import된 에디터 번들 모듈 캐시
   let pollTimer = null;
+  let bannerTimer = null;
 
   const EDITOR_BUNDLE_URL = "/assets/vendor/editor.bundle.js";
   const RAW_BASE = `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}`;
@@ -27,7 +33,7 @@
 
   function banner(type, html) {
     const el = $("banner");
-    clearTimeout(banner._hide);
+    clearTimeout(bannerTimer);
     if (!type) {
       el.className = "banner";
       return;
@@ -35,13 +41,15 @@
     el.className = `banner show ${type}`;
     el.innerHTML =
       (type === "info" ? `<span class="spinner"></span>` : "") + html;
-    if (type === "success") banner._hide = setTimeout(() => banner(), 8000);
+    if (type === "success") bannerTimer = setTimeout(() => banner(), 8000);
   }
 
+  // 속성 값 안에서도 안전하도록 따옴표까지 이스케이프한다.
+  // textContent→innerHTML 방식은 " 를 그대로 흘려보내서, 제목에 따옴표가
+  // 하나만 있어도 data-*/href/src 속성이 끊기고 마크업이 깨진다.
+  const ESC_MAP = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
   function esc(s) {
-    const div = document.createElement("div");
-    div.textContent = s ?? "";
-    return div.innerHTML;
+    return String(s ?? "").replace(/[&<>"']/g, (c) => ESC_MAP[c]);
   }
 
   function isoNow() {
@@ -492,6 +500,20 @@
     if (!editing && index.posts.some((x) => x.slug === slug)) {
       $("slug-error").textContent = "이미 같은 slug의 글이 있어요.";
       return;
+    }
+    // 이 저장소에서 실제로 두 번 난 사고는 "같은 글이 서로 다른 slug로 두 벌"이었다.
+    // slug가 다르면 위 검사에 안 걸리므로 제목으로 한 번 더 물어본다.
+    const twin = index.posts.find(
+      (x) => x.slug !== slug && x.title.trim() === title
+    );
+    if (twin) {
+      const where = twin.source === "notion" ? "노션에서 온 글" : "admin에서 쓴 글";
+      if (!confirm(`제목이 같은 글이 이미 있어요.
+
+  "${twin.title}" (${twin.slug} · ${where})
+
+그래도 새로 만들까요?`))
+        return;
     }
 
     const now = isoNow();

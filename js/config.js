@@ -1,3 +1,4 @@
+// @ts-check
 // 사이트 전역 설정 — 값만 바꾸면 다른 계정/저장소에서도 그대로 동작
 const CONFIG = {
   owner: "IM5K58",

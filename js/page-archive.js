@@ -1,3 +1,4 @@
+// @ts-check
 // archive.html 진입점: 전체 글을 연도별로 묶어 보여주고 카테고리로 걸러낸다
 (async () => {
   const bodyEl = document.getElementById("archive-body");
@@ -8,10 +9,12 @@
   const state = { category: "" };
   let allPosts = [];
 
+  // 속성 값 안에서도 안전하도록 따옴표까지 이스케이프한다.
+  // textContent→innerHTML 방식은 " 를 그대로 흘려보내서, 제목에 따옴표가
+  // 하나만 있어도 data-*/href/src 속성이 끊기고 마크업이 깨진다.
+  const ESC_MAP = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
   function esc(s) {
-    const div = document.createElement("div");
-    div.textContent = s ?? "";
-    return div.innerHTML;
+    return String(s ?? "").replace(/[&<>"']/g, (c) => ESC_MAP[c]);
   }
 
   const tab = (label, value, count, active) => `

@@ -1,3 +1,4 @@
+// @ts-check
 // 글 목록 데이터 로드 + 검색/필터 (공개 페이지용)
 const Posts = (() => {
   let cache = null;
@@ -100,7 +101,7 @@ const Posts = (() => {
 
   function formatDate(iso) {
     const d = new Date(iso);
-    if (isNaN(d)) return "";
+    if (isNaN(d.getTime())) return "";
     const p = (n) => String(n).padStart(2, "0");
     return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())}`;
   }

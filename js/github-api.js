@@ -1,3 +1,4 @@
+// @ts-check
 // GitHub Contents API 래퍼 — admin 전용 쓰기 경로
 // 주의: 수정/삭제는 sha 필수(422), stale sha는 409 → sha 캐시 + 1회 재시도로 처리
 const GH = (() => {
@@ -55,7 +56,7 @@ const GH = (() => {
   // 호출한 쪽이 원인을 구분할 수 있도록 err.status 를 함께 실어 보낸다.
   // (admin은 401일 때만 토큰을 지운다 — 다른 실패로 자격증명까지 잃으면 안 된다)
   function httpError(message, status) {
-    const err = new Error(message);
+    const err = /** @type {Error & { status?: number }} */ (new Error(message));
     err.status = status;
     return err;
   }

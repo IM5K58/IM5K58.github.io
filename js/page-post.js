@@ -1,3 +1,4 @@
+// @ts-check
 // post.html 진입점: ?slug= 글을 fetch → 렌더 → giscus 로드
 (async () => {
   const headEl = document.getElementById("post-head");
@@ -6,10 +7,12 @@
 
   const slug = new URLSearchParams(location.search).get("slug");
 
+  // 속성 값 안에서도 안전하도록 따옴표까지 이스케이프한다.
+  // textContent→innerHTML 방식은 " 를 그대로 흘려보내서, 제목에 따옴표가
+  // 하나만 있어도 data-*/href/src 속성이 끊기고 마크업이 깨진다.
+  const ESC_MAP = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
   function esc(s) {
-    const div = document.createElement("div");
-    div.textContent = s ?? "";
-    return div.innerHTML;
+    return String(s ?? "").replace(/[&<>"']/g, (c) => ESC_MAP[c]);
   }
 
   function fail(msg) {

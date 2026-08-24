@@ -1,19 +1,22 @@
+// @ts-check
 // index.html 진입점: 목록 렌더 + 검색/카테고리/태그 필터
 (async () => {
   const listEl = document.getElementById("post-list");
   const tabsEl = document.getElementById("category-tabs");
   const subTabsEl = document.getElementById("subcategory-tabs");
-  const searchEl = document.getElementById("search-input");
+  const searchEl = /** @type {HTMLInputElement} */ (document.getElementById("search-input"));
   const tagBarEl = document.getElementById("active-tag-bar");
   const tagNameEl = document.getElementById("active-tag-name");
 
   const state = { query: "", category: "", tag: "" };
   let allPosts = [];
 
+  // 속성 값 안에서도 안전하도록 따옴표까지 이스케이프한다.
+  // textContent→innerHTML 방식은 " 를 그대로 흘려보내서, 제목에 따옴표가
+  // 하나만 있어도 data-*/href/src 속성이 끊기고 마크업이 깨진다.
+  const ESC_MAP = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
   function esc(s) {
-    const div = document.createElement("div");
-    div.textContent = s ?? "";
-    return div.innerHTML;
+    return String(s ?? "").replace(/[&<>"']/g, (c) => ESC_MAP[c]);
   }
 
   const tab = (label, value, count, active) => `
@@ -112,7 +115,9 @@
   subTabsEl.addEventListener("click", onTabClick);
 
   listEl.addEventListener("click", (e) => {
-    const chip = e.target.closest("[data-tag]");
+    const chip = /** @type {HTMLElement|null} */ (
+      /** @type {Element} */ (e.target).closest("[data-tag]")
+    );
     if (!chip) return;
     e.preventDefault(); // 카드 링크 이동 막고 태그 필터 적용
     state.tag = chip.dataset.tag;

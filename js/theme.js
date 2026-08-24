@@ -1,3 +1,4 @@
+// @ts-check
 // 다크모드 관리 — <head>에서 동기 로드해야 FOUC(깜빡임)가 없다
 (function () {
   const stored = localStorage.getItem("theme");
@@ -27,21 +28,16 @@ const Theme = {
     document.dispatchEvent(new CustomEvent("themechange", { detail: { theme: next } }));
   },
 
-  // 테마에 따라오는 부속들: highlight.js 스타일시트, giscus iframe
+  // 테마를 따라가야 하는 외부 부속: giscus 댓글 iframe
   syncExtras() {
     const dark = this.current() === "dark";
-    const lightCss = document.getElementById("hljs-light");
-    const darkCss = document.getElementById("hljs-dark");
-    if (lightCss) lightCss.disabled = dark;
-    if (darkCss) darkCss.disabled = !dark;
-
-    const giscus = document.querySelector("iframe.giscus-frame");
-    if (giscus) {
-      giscus.contentWindow.postMessage(
-        { giscus: { setConfig: { theme: dark ? "dark" : "light" } } },
-        "https://giscus.app"
-      );
-    }
+    const giscus = /** @type {HTMLIFrameElement|null} */ (
+      document.querySelector("iframe.giscus-frame")
+    );
+    giscus?.contentWindow?.postMessage(
+      { giscus: { setConfig: { theme: dark ? "dark" : "light" } } },
+      "https://giscus.app"
+    );
   },
 
   // 헤더의 토글 버튼 연결 (모든 페이지 공통)
