@@ -92,7 +92,7 @@
         ${
           p.thumbnail
             ? `<img class="figure" src="${esc(p.thumbnail)}" alt="" loading="lazy">`
-            : `<span class="figure figure-empty" aria-hidden="true">NO FIG</span>`
+            : ""
         }
       </a>`
       )

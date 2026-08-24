@@ -274,29 +274,15 @@
   margin-top: 14px;
 }
 
-/* 오른쪽 도판 칸. 그림이 없으면 같은 폭의 조용한 판으로 채워
-   목록의 칼럼 리듬이 흐트러지지 않게 한다 */
+/* 오른쪽 도판 칸. 그림이 있는 카드에만 붙고, 없으면 본문이 카드 폭을 다 쓴다 */
 .post-card .figure {
   flex: none;
   width: 150px;
-  border-left: 1.5px solid var(--border-strong);
-  background: var(--bg-elevated);
-}
-
-.post-card img.figure {
-  object-fit: cover;
   align-self: stretch;
   height: auto;
-}
-
-.post-card .figure-empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  color: var(--text-weak);
+  object-fit: cover;
+  background: var(--bg-elevated);
+  border-left: 1.5px solid var(--border-strong);
 }
 
 /* ---------- 태그 칩 (공용) ---------- */
