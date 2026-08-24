@@ -34,7 +34,7 @@
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--elevation-1);
 }
 
 .login-card .field {
@@ -321,8 +321,8 @@
   --crepe-font-default: "Pretendard Variable", Pretendard, sans-serif;
   --crepe-font-code: "JetBrains Mono", "D2Coding", Consolas, monospace;
 
-  --crepe-shadow-1: var(--shadow-card);
-  --crepe-shadow-2: var(--shadow-pop);
+  --crepe-shadow-1: var(--elevation-1);
+  --crepe-shadow-2: var(--elevation-3);
 
   /* 아래로 여백을 둬서 이어 쓰기 편하게 (과하면 영역 인지를 해침) */
   min-height: 55vh;

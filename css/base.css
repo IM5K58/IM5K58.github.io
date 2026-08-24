@@ -56,6 +56,15 @@ select {
   color: var(--primary-weak-text);
 }
 
+/* 테마 전환 순간에는 모든 전환을 끈다 (theme.js가 잠깐 붙였다 뗀다).
+   전환 중 색 토큰이 바뀌면 다층 그림자가 이전 값에 고착되기 때문이다. */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+}
+
 /* ---------- 헤더 ---------- */
 .site-header {
   position: sticky;

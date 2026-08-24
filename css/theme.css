@@ -1,30 +1,53 @@
-/* 디자인 토큰 — 색상/라운드/그림자는 전부 여기서만 정의한다 */
+/* 디자인 토큰 — 색상/라운드/그림자는 전부 여기서만 정의한다.
+   색은 oklch(밝기 채도 색상각)로 적는다. 사람 눈 기준으로 균일해서
+   color-mix()로 섞거나 밝기만 조절해도 색이 탁해지지 않는다. */
 :root {
-  --bg: #ffffff;
-  --bg-soft: #f9fafb;
-  --bg-elevated: #f2f4f6;
-  --bg-card: #ffffff;
+  color-scheme: light; /* 스크롤바·기본 폼 요소가 테마를 따라가게 한다 */
 
-  --text: #191f28;
-  --text-sub: #4e5968;
-  --text-weak: #8b95a1;
+  --bg: oklch(100% 0 0);
+  --bg-soft: oklch(98.46% 0.002 247.8);
+  --bg-elevated: oklch(96.62% 0.003 247.9);
+  --bg-card: oklch(100% 0 0);
 
-  --primary: #3182f6;
-  --primary-hover: #1b64da;
-  --primary-weak: #e8f3ff;
-  --primary-weak-text: #1b64da;
+  --text: oklch(23.74% 0.02 258.4);
+  --text-sub: oklch(46.02% 0.028 256.2);
+  --text-weak: oklch(66.57% 0.021 252.9);
 
-  --danger: #f04452;
-  --danger-weak: #fdedee;
+  --primary: oklch(62.01% 0.191 258.2);
+  --primary-hover: oklch(53.21% 0.194 260.2);
+  --primary-weak: oklch(95.94% 0.02 250.4);
+  --primary-weak-text: oklch(53.21% 0.194 260.2);
 
-  --border: #f2f4f6;
-  --border-strong: #e5e8eb;
+  --danger: oklch(64.06% 0.208 21);
+  --danger-weak: oklch(95.9% 0.017 13.1);
 
-  --code-bg: #f6f8fa;
+  --border: oklch(96.62% 0.003 247.9);
+  --border-strong: oklch(92.96% 0.005 247.9);
 
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.03), 0 6px 20px rgba(0, 0, 0, 0.05);
-  --shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.1);
-  --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --code-bg: oklch(97.82% 0.003 247.9);
+
+  /* 그림자 색은 검정이 아니라 본문색을 옅게 쓴다 — 배경과 어울려 덜 탁하다.
+     주의: 커스텀 속성 안에 var()를 중첩하면 테마 토글 시 재계산되지 않으므로
+     색을 직접 적는다. 색조를 바꾸려면 아래 6줄의 oklch 값을 함께 고칠 것. */
+  --elevation-1:
+    0 0.3px 0.4px oklch(23.74% 0.02 258.4 / 0.05),
+    0 0.9px 1.2px -0.7px oklch(23.74% 0.02 258.4 / 0.05),
+    0 2.1px 2.8px -1.4px oklch(23.74% 0.02 258.4 / 0.05);
+
+  --elevation-2:
+    0 0.3px 0.4px oklch(23.74% 0.02 258.4 / 0.05),
+    0 1.5px 2px -0.4px oklch(23.74% 0.02 258.4 / 0.05),
+    0 3.4px 4.5px -0.9px oklch(23.74% 0.02 258.4 / 0.05),
+    0 7.6px 10.1px -1.4px oklch(23.74% 0.02 258.4 / 0.05);
+
+  --elevation-3:
+    0 0.3px 0.4px oklch(23.74% 0.02 258.4 / 0.06),
+    0 2.4px 3.2px -0.3px oklch(23.74% 0.02 258.4 / 0.06),
+    0 4.6px 6.1px -0.6px oklch(23.74% 0.02 258.4 / 0.06),
+    0 8.1px 10.8px -0.9px oklch(23.74% 0.02 258.4 / 0.06),
+    0 14.2px 18.9px -1.1px oklch(23.74% 0.02 258.4 / 0.06),
+    0 24.3px 32.4px -1.4px oklch(23.74% 0.02 258.4 / 0.06);
+
 
   --radius: 16px;
   --radius-sm: 10px;
@@ -34,29 +57,47 @@
 }
 
 [data-theme="dark"] {
-  --bg: #17171c;
-  --bg-soft: #1c1c22;
-  --bg-elevated: #26262e;
-  --bg-card: #1e1e25;
+  color-scheme: dark;
 
-  --text: #e5e8eb;
-  --text-sub: #b0b8c1;
-  --text-weak: #6b7684;
+  --bg: oklch(20.69% 0.01 285.5);
+  --bg-soft: oklch(22.91% 0.012 285.5);
+  --bg-elevated: oklch(27.2% 0.015 285.4);
+  --bg-card: oklch(23.81% 0.013 285.3);
 
-  --primary: #4593fc;
-  --primary-hover: #6aa8fd;
-  --primary-weak: #1b2a45;
-  --primary-weak-text: #7cb3fd;
+  --text: oklch(92.96% 0.005 247.9);
+  --text-sub: oklch(77.91% 0.016 251.2);
+  --text-weak: oklch(56.16% 0.025 254.5);
 
-  --danger: #f66570;
-  --danger-weak: #3a2226;
+  --primary: oklch(66.6% 0.174 256.8);
+  --primary-hover: oklch(72.63% 0.14 256.6);
+  --primary-weak: oklch(28.61% 0.054 261.5);
+  --primary-weak-text: oklch(75.85% 0.122 256.1);
 
-  --border: #26262e;
-  --border-strong: #333340;
+  --danger: oklch(69.18% 0.178 18.5);
+  --danger-weak: oklch(28.42% 0.037 8.8);
 
-  --code-bg: #22222a;
+  --border: oklch(27.2% 0.015 285.4);
+  --border-strong: oklch(32.65% 0.023 285.1);
 
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.35);
-  --shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.25), 0 12px 32px rgba(0, 0, 0, 0.5);
-  --shadow-pop: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --code-bg: oklch(25.54% 0.015 285.3);
+
+  /* 어두운 배경에서는 그림자가 훨씬 진해야 형태가 보인다 */
+  --elevation-1:
+    0 0.3px 0.4px oklch(0% 0 0 / 0.26),
+    0 0.9px 1.2px -0.7px oklch(0% 0 0 / 0.26),
+    0 2.1px 2.8px -1.4px oklch(0% 0 0 / 0.26);
+
+  --elevation-2:
+    0 0.3px 0.4px oklch(0% 0 0 / 0.26),
+    0 1.5px 2px -0.4px oklch(0% 0 0 / 0.26),
+    0 3.4px 4.5px -0.9px oklch(0% 0 0 / 0.26),
+    0 7.6px 10.1px -1.4px oklch(0% 0 0 / 0.26);
+
+  --elevation-3:
+    0 0.3px 0.4px oklch(0% 0 0 / 0.3),
+    0 2.4px 3.2px -0.3px oklch(0% 0 0 / 0.3),
+    0 4.6px 6.1px -0.6px oklch(0% 0 0 / 0.3),
+    0 8.1px 10.8px -0.9px oklch(0% 0 0 / 0.3),
+    0 14.2px 18.9px -1.1px oklch(0% 0 0 / 0.3),
+    0 24.3px 32.4px -1.4px oklch(0% 0 0 / 0.3);
 }

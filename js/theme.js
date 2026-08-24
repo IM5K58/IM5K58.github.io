@@ -14,8 +14,15 @@ const Theme = {
 
   toggle() {
     const next = this.current() === "dark" ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
+    const root = document.documentElement;
+    // 전환(transition)이 걸린 채로 색 토큰이 바뀌면 box-shadow 같은 값이
+    // 이전 값에 고착되는 브라우저 문제가 있다. 바뀌는 순간만 전환을 끈다.
+    root.classList.add("theme-switching");
+    root.dataset.theme = next;
     localStorage.setItem("theme", next);
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => root.classList.remove("theme-switching"))
+    );
     this.syncExtras();
     document.dispatchEvent(new CustomEvent("themechange", { detail: { theme: next } }));
   },
