@@ -24,10 +24,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
+          cache-dependency-path: tools/notion-sync/package-lock.json
 
       - name: 의존성 설치
         working-directory: tools/notion-sync
-        run: npm install --no-audit --no-fund
+        # 커밋된 락파일 그대로 설치한다. npm install 은 캐럿 범위를 매번 새로
+        # 해석해서, 저장소 쓰기 권한과 노션 토큰을 쥔 이 잡이 하루 96번
+        # 예고 없이 다른 코드를 받아올 수 있다.
+        run: npm ci
 
       - name: 노션 → 마크다운 변환
         working-directory: tools/notion-sync
@@ -48,6 +53,9 @@ jobs:
           git commit -m "notion: 글 동기화"
           # admin에서 동시에 커밋했을 수 있으므로 재시도
           for i in 1 2 3; do
+            # 앞 회차가 충돌로 rebase 진행 중 상태를 남기면 다음 회차가
+            # "already in progress"로 즉사해 재시도 루프가 무력해진다
+            git rebase --abort 2>/dev/null || true
             git pull --rebase origin main && git push origin main && exit 0
             echo "push 재시도 $i"
             sleep 5

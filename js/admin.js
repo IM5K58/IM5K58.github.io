@@ -65,7 +65,10 @@
       renderList();
       showView("list");
     } catch (err) {
-      GH.clearToken();
+      // 토큰을 버리는 건 토큰이 실제로 무효할 때(401)뿐이다.
+      // index.json 손상이나 일시적 네트워크 오류로 자격증명까지 지우면,
+      // 그걸 고치러 들어온 사람이 로그인 단계에서 튕겨나간다.
+      if (err.status === 401) GH.clearToken();
       showView("login");
       $("token-error").textContent = err.message;
     }
@@ -73,7 +76,15 @@
 
   async function loadIndex() {
     const file = await GH.getFile(INDEX_PATH);
-    index = file ? JSON.parse(file.text) : { version: 1, categories: [], posts: [] };
+    if (!file) {
+      index = { version: 1, categories: [], posts: [] };
+      return;
+    }
+    try {
+      index = JSON.parse(file.text);
+    } catch (err) {
+      throw new Error("posts/index.json 을 읽을 수 없어요 (형식 오류). 인덱스 재빌드로 복구할 수 있습니다.");
+    }
     index.posts = index.posts || [];
     // 예전 index.json엔 categories가 없을 수 있음 → 글에서 파생해 초기화
     if (!index.categories) {
@@ -329,30 +340,81 @@
     );
   }
 
+  // ---------- 이미지 업로드 ----------
+  const MAX_EDGE = 1600; // 본문 최대 폭의 2배. 고해상도 화면에서도 충분하다
+  const SKIP_BYTES = 500 * 1024; // 이미 작은 도표를 다시 인코딩할 이유는 없다
+  const WEBP_QUALITY = 0.85;
+
+  // 스크린샷을 원본 그대로 커밋하면 한 장에 2MB가 넘는다. 커밋된 이미지는
+  // 히스토리에서 사라지지 않으므로, 들어오는 시점에 줄이는 게 유일한 방어다.
+  async function shrinkImage(file) {
+    if (!file.type.startsWith("image/") || file.type === "image/gif") return null;
+
+    const bitmap = await createImageBitmap(file).catch(() => null);
+    if (!bitmap) return null;
+
+    const longEdge = Math.max(bitmap.width, bitmap.height);
+    if (longEdge <= MAX_EDGE && file.size < SKIP_BYTES) {
+      bitmap.close();
+      return null; // 이미 충분히 작다
+    }
+
+    const scale = Math.min(1, MAX_EDGE / longEdge);
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+
+    const blob = await new Promise((res) => canvas.toBlob(res, "image/webp", WEBP_QUALITY));
+    if (!blob || blob.size >= file.size) return null; // 되레 커지면 원본을 쓴다
+    return blob;
+  }
+
+  function toBase64(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result).split(",")[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
   // Crepe ImageBlock onUpload: 파일을 저장소에 커밋하고 md에 넣을 경로를 반환
   async function uploadImage(file) {
     try {
-      banner("info", "이미지 업로드 중...");
+      banner("info", "이미지 처리 중...");
       const d = new Date();
       const p = (n) => String(n).padStart(2, "0");
-      const safeName =
+
+      const shrunk = await shrinkImage(file);
+      const payload = shrunk || file;
+      const baseName =
         (file.name || "image.png")
           .toLowerCase()
           .replace(/[^a-z0-9.]+/g, "-")
           .replace(/^-+|-+$/g, "") || "image.png";
+      const safeName = shrunk ? baseName.replace(/\.[a-z0-9]+$/, "") + ".webp" : baseName;
       const path = `assets/images/${d.getFullYear()}/${p(d.getMonth() + 1)}/${Date.now()}-${safeName}`;
 
-      const b64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(",")[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+      const kb = (n) => Math.round(n / 1024).toLocaleString();
+      banner(
+        "info",
+        shrunk
+          ? `이미지 업로드 중... (${kb(file.size)}KB → ${kb(shrunk.size)}KB)`
+          : "이미지 업로드 중..."
+      );
 
+      const b64 = await toBase64(payload);
       await GH.putFile(path, b64, `image: ${safeName} 업로드`, { isBase64: true });
       const url = `/${path}`;
       if (!$("f-thumbnail").value) $("f-thumbnail").value = url;
-      banner("success", "이미지 업로드 완료");
+      banner(
+        "success",
+        shrunk
+          ? `이미지 업로드 완료 — ${Math.round((1 - shrunk.size / file.size) * 100)}% 절약`
+          : "이미지 업로드 완료"
+      );
       return url;
     } catch (err) {
       banner("error", `이미지 업로드 실패: ${esc(err.message)}`);
@@ -361,6 +423,16 @@
   }
 
   async function openEditor(post) {
+    // await 이전에 이전 인스턴스를 반드시 정리한다.
+    // 아래 GH.getFile()이 실패하면 화면만 새 글로 바뀌고 에디터는 이전 글을
+    // 그대로 들고 있어, 저장 시 A글 본문이 B글로 커밋되는 사고가 난다.
+    if (crepe) {
+      await crepe.destroy().catch(() => {});
+      crepe = null;
+    }
+    $("editor").innerHTML = "";
+    $("btn-save").disabled = true; // createEditor 성공 후 다시 연다
+
     editing = post || null;
     const d = new Date();
     const p = (n) => String(n).padStart(2, "0");
@@ -398,8 +470,10 @@
         banner();
       }
       await createEditor(body);
+      $("btn-save").disabled = false;
     } catch (err) {
-      banner("error", esc(err.message));
+      // 저장 버튼은 잠긴 채로 둔다 — 빈 에디터를 덮어쓰는 것보다 낫다
+      banner("error", `${esc(err.message)} — 목록으로 돌아갔다 다시 열어 주세요.`);
     }
   }
 
@@ -442,6 +516,9 @@
       await GH.putFile(`posts/${slug}.md`, md, `post: ${title}`);
 
       banner("info", "목록 갱신 중... (2/2)");
+      // 메모리에 든 사본은 로그인 시점 것이다. 그 사이 노션 동기화(15분 주기)가
+      // 추가한 글을 덮어쓰지 않도록, 쓰기 직전에 최신본을 다시 읽는다.
+      await loadIndex();
       const i = index.posts.findIndex((x) => x.slug === slug);
       if (i >= 0) index.posts[i] = meta;
       else index.posts.push(meta);
@@ -502,6 +579,7 @@
 
     try {
       banner("info", "목록에서 제거 중... (1/2)");
+      await loadIndex(); // 저장과 같은 이유로 최신본 기준에서 지운다
       index.posts = index.posts.filter((x) => x.slug !== slug);
       await GH.putFile(INDEX_PATH, JSON.stringify(index, null, 2), `index: ${post.title} 삭제`);
 
@@ -527,9 +605,10 @@
       for (let i = 0; i < files.length; i++) {
         banner("info", `frontmatter 읽는 중... (${i + 1}/${files.length})`);
         const file = await GH.getFile(files[i].path);
+        if (!file) continue; // 조회 중 삭제된 파일 — 통째로 죽이지 않고 건너뛴다
         const { meta } = Render.parseFrontmatter(file.text);
         const slug = files[i].name.replace(/\.md$/, "");
-        posts.push({
+        const entry = {
           slug,
           title: meta.title || slug,
           date: meta.date || isoNow(),
@@ -539,7 +618,19 @@
           summary: meta.summary || "",
           thumbnail: meta.thumbnail || "",
           draft: !!meta.draft,
-        });
+        };
+        // 노션 출처 표시를 반드시 살려야 한다. 떨어뜨리면 이 글이 admin 글로 보여
+        // 다음 동기화에서 같은 slug가 두 벌로 늘어나고, 수정 잠금도 풀린다.
+        if (meta.source) {
+          entry.source = meta.source;
+          if (meta.notionId) entry.notionId = meta.notionId;
+          if (meta.notionUrl) entry.notionUrl = meta.notionUrl;
+          if (meta.notionEdited) entry.notionEdited = meta.notionEdited;
+          // frontmatter 파서는 문자열만 돌려준다. 숫자로 넣지 않으면
+          // sync.js의 엄격 비교("2" !== 2)가 어긋나 전량 재변환이 돈다.
+          if (meta.syncVersion) entry.syncVersion = Number(meta.syncVersion);
+        }
+        posts.push(entry);
       }
       posts.sort((a, b) => (a.date < b.date ? 1 : -1));
       // 글에서 발견된 카테고리는 상위 경로까지 함께 등록

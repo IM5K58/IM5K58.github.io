@@ -52,12 +52,22 @@ const GH = (() => {
   }
 
   // ---------- 조회 ----------
+  // 호출한 쪽이 원인을 구분할 수 있도록 err.status 를 함께 실어 보낸다.
+  // (admin은 401일 때만 토큰을 지운다 — 다른 실패로 자격증명까지 잃으면 안 된다)
+  function httpError(message, status) {
+    const err = new Error(message);
+    err.status = status;
+    return err;
+  }
+
   async function verifyToken() {
     const res = await request("GET", repoPath());
-    if (res.status === 401) throw new Error("토큰이 유효하지 않습니다.");
+    if (res.status === 401) throw httpError("토큰이 유효하지 않습니다.", 401);
     if (res.status === 404)
-      throw new Error("저장소에 접근할 수 없습니다. 토큰의 Repository access를 확인하세요.");
-    if (!res.ok) throw new Error(`저장소 확인 실패 (${res.status})`);
+      throw httpError("저장소에 접근할 수 없습니다. 토큰의 Repository access를 확인하세요.", 404);
+    if (res.status === 403)
+      throw httpError("접근이 거부됐어요. 요청 한도에 걸렸거나 토큰 권한이 부족합니다.", 403);
+    if (!res.ok) throw httpError(`저장소 확인 실패 (${res.status})`, res.status);
     return res.json();
   }
 
@@ -68,7 +78,7 @@ const GH = (() => {
       `${repoPath()}/contents/${encodePath(path)}?ref=${CONFIG.branch}&t=${Date.now()}`
     );
     if (res.status === 404) return null;
-    if (!res.ok) throw new Error(`${path} 읽기 실패 (${res.status})`);
+    if (!res.ok) throw httpError(`${path} 읽기 실패 (${res.status})`, res.status);
     const data = await res.json();
     shaCache.set(path, data.sha);
     return { text: base64ToUtf8(data.content), sha: data.sha };

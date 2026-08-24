@@ -396,6 +396,10 @@ function buildFrontmatter(meta) {
   lines.push(`source: notion`);
   lines.push(`notionId: ${meta.notionId}`);
   lines.push(`notionUrl: ${meta.notionUrl}`);
+  // 아래 둘은 index.json이 손상됐을 때 md만 보고 복구하기 위해 기록한다.
+  // 없으면 admin의 인덱스 재빌드가 이 값을 되살릴 수 없어 전량 재변환이 돈다.
+  lines.push(`notionEdited: ${meta.notionEdited}`);
+  lines.push(`syncVersion: ${meta.syncVersion}`);
   lines.push("---");
   return lines.join("\n");
 }
