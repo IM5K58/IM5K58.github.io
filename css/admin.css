@@ -1,7 +1,10 @@
 /* 관리자 페이지: 토큰 로그인, 글 목록 관리, 에디터 */
 
+/* .container는 좌우 여백을 안쪽 구획에 맡기지만, 관리 화면은 구획마다
+   규칙선을 두지 않으므로 컨테이너가 직접 여백을 갖는다 */
 .admin-container {
   max-width: 1080px;
+  padding: 0 var(--page-pad);
 }
 
 .admin-view {
@@ -16,8 +19,8 @@
 
 .admin-title {
   font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 .admin-sub {
@@ -32,9 +35,7 @@
   margin: 40px auto 0;
   padding: 32px;
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--elevation-1);
+  border: 1.5px solid var(--border-strong);
 }
 
 .login-card .field {
@@ -47,8 +48,8 @@
   font-size: 13.5px;
   line-height: 1.7;
   color: var(--text-sub);
-  background: var(--bg-soft);
-  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  border-left: 8px solid var(--border-strong);
 }
 
 .token-guide strong {
@@ -69,9 +70,11 @@
 .field label {
   display: block;
   margin-bottom: 6px;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--text-sub);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-weak);
 }
 
 .field input[type="text"],
@@ -79,27 +82,26 @@
 .field select,
 .field textarea {
   width: 100%;
-  height: 46px;
-  padding: 0 14px;
+  height: 44px;
+  padding: 0 12px;
   font-size: 15px;
-  background: var(--bg-elevated);
-  border: 1.5px solid transparent;
-  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong);
   outline: none;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: box-shadow 0.16s ease;
 }
 
 .field textarea {
   height: auto;
-  padding: 12px 14px;
+  padding: 12px;
   resize: vertical;
 }
 
+/* 초점은 색이 아니라 오프셋 그림자로 알린다 — 이 방향에서는 그게 강조 장치다 */
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  background: var(--bg-card);
-  border-color: var(--primary);
+  box-shadow: var(--elevation-2);
 }
 
 .field select {
@@ -120,9 +122,8 @@
   height: 44px;
   padding: 0 10px;
   font-size: 14px;
-  background: var(--bg-elevated);
-  border: 1.5px solid transparent;
-  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong);
   outline: none;
   cursor: pointer;
 }
@@ -135,18 +136,16 @@
 .cats-add input {
   flex: 1;
   height: 44px;
-  padding: 0 14px;
+  padding: 0 12px;
   font-size: 15px;
-  background: var(--bg-elevated);
-  border: 1.5px solid transparent;
-  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong);
   outline: none;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: box-shadow 0.16s ease;
 }
 
 .cats-add input:focus {
-  background: var(--bg-card);
-  border-color: var(--primary);
+  box-shadow: var(--elevation-2);
 }
 
 .field .hint {
@@ -189,15 +188,15 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 16px 20px;
+  padding: 14px 16px;
   background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  transition: border-color 0.15s ease;
+  border: 1.5px solid var(--border-strong);
+  transition: box-shadow 0.16s ease, transform 0.16s ease;
 }
 
 .manage-row:hover {
-  border-color: var(--border-strong);
+  box-shadow: var(--elevation-2);
+  transform: translate(-2px, -2px);
 }
 
 .manage-row .info {
@@ -207,7 +206,8 @@
 
 .manage-row .title {
   font-size: 15.5px;
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -215,37 +215,35 @@
 
 .manage-row .sub {
   margin-top: 3px;
-  font-size: 13px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
   color: var(--text-weak);
 }
 
 .manage-row .sub .category {
-  color: var(--primary);
-  font-weight: 600;
+  color: var(--text-sub);
 }
 
 .badge-notion {
   display: inline-block;
   margin-left: 8px;
-  padding: 2px 8px;
-  font-size: 11.5px;
-  font-weight: 700;
+  padding: 1px 6px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
   color: var(--text-sub);
-  background: var(--bg-elevated);
-  border-radius: var(--radius-full);
-  vertical-align: 2px;
+  border: 1px solid var(--rule);
 }
 
 .badge-draft {
   display: inline-block;
   margin-left: 8px;
-  padding: 2px 8px;
-  font-size: 11.5px;
-  font-weight: 700;
+  padding: 1px 6px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
   color: var(--danger);
-  background: var(--danger-weak);
-  border-radius: var(--radius-full);
-  vertical-align: 2px;
+  border: 1px solid var(--danger);
 }
 
 .manage-row .row-actions {
@@ -319,15 +317,21 @@
   --crepe-base-font-size: 16px;
   --crepe-font-title: "Pretendard Variable", Pretendard, sans-serif;
   --crepe-font-default: "Pretendard Variable", Pretendard, sans-serif;
-  --crepe-font-code: "JetBrains Mono", "D2Coding", Consolas, monospace;
+  --crepe-font-code: "IBM Plex Mono", "D2Coding", Consolas, monospace;
 
-  --crepe-shadow-1: var(--elevation-1);
-  --crepe-shadow-2: var(--elevation-3);
+  /* 값을 직접 적는다 — 커스텀 속성 안에 var()를 중첩하면
+     테마 토글 때 재계산되지 않는 브라우저 문제가 있다 (theme.css 참고) */
+  --crepe-shadow-1: none;
+  --crepe-shadow-2: 8px 8px 0 #dcdcd8;
 
   /* 아래로 여백을 둬서 이어 쓰기 편하게 (과하면 영역 인지를 해침) */
   min-height: 55vh;
   padding: 0 0 16vh;
   background: transparent;
+}
+
+[data-theme="dark"] .milkdown {
+  --crepe-shadow-2: 8px 8px 0 #0b0c0e;
 }
 
 /* 본문 컬럼은 읽기 좋은 폭으로 가운데 정렬 */
@@ -338,49 +342,50 @@
 
 /* ---------- 에디터 안 콜아웃 실시간 시각화 ----------
    admin.js의 PM 데코레이션 플러그인이 blockquote에 callout-bq 클래스를 붙인다 */
+/* 발행된 글(post.css)과 같은 모양으로 맞춘다 — 쓰는 화면과 읽는 화면이
+   달라 보이면 콜아웃 종류를 색으로 기억할 수 없다 */
 .milkdown blockquote.callout-bq {
-  --co-color: var(--primary);
-  --co-bg: var(--primary-weak);
-  background: var(--co-bg);
-  border-left: 3px solid var(--co-color) !important;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  padding: 12px 18px;
+  --co-color: oklch(50% 0.15 258);
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong) !important;
+  border-left: 8px solid var(--co-color) !important;
 }
 
 .milkdown blockquote.callout-tip {
-  --co-color: #12b76a;
-  --co-bg: #e9f9f1;
+  --co-color: oklch(52% 0.14 145);
 }
 
 .milkdown blockquote.callout-important {
-  --co-color: #7a5af8;
-  --co-bg: #f1eeff;
+  --co-color: oklch(50% 0.18 295);
 }
 
 .milkdown blockquote.callout-warning {
-  --co-color: #f79009;
-  --co-bg: #fef4e6;
+  --co-color: oklch(58% 0.16 55);
 }
 
 .milkdown blockquote.callout-caution {
-  --co-color: #f04452;
-  --co-bg: #fdedee;
+  --co-color: oklch(53% 0.2 20);
+}
+
+[data-theme="dark"] .milkdown blockquote.callout-bq {
+  --co-color: oklch(70% 0.14 258);
 }
 
 [data-theme="dark"] .milkdown blockquote.callout-tip {
-  --co-bg: #12301f;
+  --co-color: oklch(72% 0.14 145);
 }
 
 [data-theme="dark"] .milkdown blockquote.callout-important {
-  --co-bg: #241d45;
+  --co-color: oklch(70% 0.16 295);
 }
 
 [data-theme="dark"] .milkdown blockquote.callout-warning {
-  --co-bg: #3a2a12;
+  --co-color: oklch(75% 0.15 55);
 }
 
 [data-theme="dark"] .milkdown blockquote.callout-caution {
-  --co-bg: #3a2226;
+  --co-color: oklch(70% 0.18 20);
 }
 
 .editor-actions {
@@ -412,29 +417,34 @@
 .editor-help ul {
   margin: 4px 0 12px;
   padding: 14px 18px 14px 34px;
-  background: var(--bg-soft);
-  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong);
   line-height: 1.9;
   color: var(--text-sub);
 }
 
 .editor-help code {
   padding: 1px 5px;
-  font-size: 0.9em;
+  font-family: var(--font-mono);
+  font-size: 0.87em;
   background: var(--bg-elevated);
-  border-radius: 4px;
+  border: 1px solid var(--border);
 }
 
 /* ---------- 상태 배너 ---------- */
+/* 상태는 색 면적이 아니라 왼쪽 색 블록으로 알린다 — 콜아웃과 같은 어법 */
 .banner {
   display: none;
   align-items: center;
   gap: 10px;
-  margin-bottom: 20px;
-  padding: 14px 18px;
+  margin: 20px 0 0;
+  padding: 13px 16px;
   font-size: 14px;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
+  font-weight: 500;
+  color: var(--text);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong);
+  border-left: 8px solid var(--text-weak);
 }
 
 .banner.show {
@@ -442,23 +452,19 @@
 }
 
 .banner.info {
-  color: var(--primary-weak-text);
-  background: var(--primary-weak);
+  border-left-color: var(--primary);
 }
 
 .banner.success {
-  color: #1a7f37;
-  background: #e6f6ec;
+  border-left-color: oklch(52% 0.14 145);
 }
 
 [data-theme="dark"] .banner.success {
-  color: #57d38c;
-  background: #16301f;
+  border-left-color: oklch(72% 0.14 145);
 }
 
 .banner.error {
-  color: var(--danger);
-  background: var(--danger-weak);
+  border-left-color: var(--danger);
 }
 
 .banner .spinner {

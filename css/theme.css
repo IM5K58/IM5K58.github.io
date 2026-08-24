@@ -1,103 +1,107 @@
-/* 디자인 토큰 — 색상/라운드/그림자는 전부 여기서만 정의한다.
-   색은 oklch(밝기 채도 색상각)로 적는다. 사람 눈 기준으로 균일해서
-   color-mix()로 섞거나 밝기만 조절해도 색이 탁해지지 않는다. */
+/* 디자인 토큰 — 색상/기하/그림자/글꼴은 전부 여기서만 정의한다.
+   방향은 "기술 색인": 골격은 무채색과 규칙선으로만 짜고, 유채색은
+   카테고리와 링크에만 남긴다. 라운드는 0, 구조 테두리는 1.5px 잉크색,
+   그림자는 기본 없음 + 호버에만 오프셋 단색.
+
+   유채색은 oklch(밝기 채도 색상각)로 적는다. 사람 눈 기준으로 균일해서
+   색상각만 돌려도 밝기가 유지되고, 그래서 카테고리 8색에 흰 글씨를 얹어도
+   대비가 일정하다. 무채색은 눈으로 고른 값이라 hex 그대로 둔다. */
 :root {
   color-scheme: light; /* 스크롤바·기본 폼 요소가 테마를 따라가게 한다 */
 
-  --bg: oklch(100% 0 0);
-  --bg-soft: oklch(98.46% 0.002 247.8);
-  --bg-elevated: oklch(96.62% 0.003 247.9);
-  --bg-card: oklch(100% 0 0);
+  --bg: #f7f7f5; /* 종이 */
+  --bg-soft: #fbfbf9; /* 표 줄무늬 */
+  --bg-elevated: #f2f2ef; /* 라벨 칸·표 머리 */
+  --bg-card: #ffffff; /* 카드 표면 */
 
-  --text: oklch(23.74% 0.02 258.4);
-  --text-sub: oklch(46.02% 0.028 256.2);
-  --text-weak: oklch(66.57% 0.021 252.9);
+  /* 반전 칸 (선택된 탭 등). 헤더 바와는 별개다 — 헤더는 두 테마 모두 어둡다 */
+  --bg-inverse: #17181a;
+  --text-inverse: #f7f7f5;
 
-  --primary: oklch(62.01% 0.191 258.2);
-  --primary-hover: oklch(53.21% 0.194 260.2);
-  --primary-weak: oklch(95.94% 0.02 250.4);
-  --primary-weak-text: oklch(53.21% 0.194 260.2);
+  --text: #17181a; /* 잉크 */
+  --text-sub: #4b5058;
+  --text-weak: #6b6f76; /* 메타. 종이 위 4.71:1 — 이보다 옅게 내리지 말 것 */
 
-  --danger: oklch(64.06% 0.208 21);
-  --danger-weak: oklch(95.9% 0.017 13.1);
+  /* 밝기를 45%로 낮춘 파랑. 흰 글씨를 얹을 수 있고 종이 위 링크로도 읽힌다 */
+  --primary: oklch(45% 0.15 258);
+  --primary-hover: oklch(35% 0.15 258);
+  --primary-weak: oklch(94% 0.03 258);
+  --primary-weak-text: oklch(40% 0.14 258);
 
-  --border: oklch(96.62% 0.003 247.9);
-  --border-strong: oklch(92.96% 0.005 247.9);
+  --danger: oklch(48% 0.19 25);
+  --danger-weak: oklch(94% 0.03 25);
 
-  --code-bg: oklch(97.82% 0.003 247.9);
+  --border: #e2e2de; /* 안쪽 구분선 1px */
+  --border-strong: #17181a; /* 구조 테두리 1.5px — 이 방향의 골격 */
+  --rule: #949591; /* 약한 테두리(태그 칩). 흰 배경 위 3.01:1 */
+  --gridline: #eaeae6; /* 목록 화면 배경 격자 */
 
-  /* 그림자 색은 검정이 아니라 본문색을 옅게 쓴다 — 배경과 어울려 덜 탁하다.
+  /* 코드는 두 테마 모두 어두운 판으로 간다 — 본문 흐름에서 확실히 분리된다 */
+  --code-bg: #17181a;
+  --code-text: #dfe2e5;
+
+  --header-bg: #17181a;
+  --header-text: #f7f7f5;
+  --header-text-weak: #a8acb2;
+
+  /* 기본은 그림자 없음. 2단은 호버, 3단은 떠 있는 판(모달·팝오버).
      주의: 커스텀 속성 안에 var()를 중첩하면 테마 토글 시 재계산되지 않으므로
-     색을 직접 적는다. 색조를 바꾸려면 아래 6줄의 oklch 값을 함께 고칠 것. */
-  --elevation-1:
-    0 0.3px 0.4px oklch(23.74% 0.02 258.4 / 0.05),
-    0 0.9px 1.2px -0.7px oklch(23.74% 0.02 258.4 / 0.05),
-    0 2.1px 2.8px -1.4px oklch(23.74% 0.02 258.4 / 0.05);
+     색을 직접 적는다. */
+  --elevation-1: none;
+  --elevation-2: 5px 5px 0 #dcdcd8;
+  --elevation-3: 8px 8px 0 #dcdcd8;
 
-  --elevation-2:
-    0 0.3px 0.4px oklch(23.74% 0.02 258.4 / 0.05),
-    0 1.5px 2px -0.4px oklch(23.74% 0.02 258.4 / 0.05),
-    0 3.4px 4.5px -0.9px oklch(23.74% 0.02 258.4 / 0.05),
-    0 7.6px 10.1px -1.4px oklch(23.74% 0.02 258.4 / 0.05);
+  /* 라운드 0이 이 방향의 핵심이다. 토큰 이름은 유지해 기존 규칙이 그대로 따라온다 */
+  --radius: 0;
+  --radius-sm: 0;
+  --radius-full: 0;
 
-  --elevation-3:
-    0 0.3px 0.4px oklch(23.74% 0.02 258.4 / 0.06),
-    0 2.4px 3.2px -0.3px oklch(23.74% 0.02 258.4 / 0.06),
-    0 4.6px 6.1px -0.6px oklch(23.74% 0.02 258.4 / 0.06),
-    0 8.1px 10.8px -0.9px oklch(23.74% 0.02 258.4 / 0.06),
-    0 14.2px 18.9px -1.1px oklch(23.74% 0.02 258.4 / 0.06),
-    0 24.3px 32.4px -1.4px oklch(23.74% 0.02 258.4 / 0.06);
+  /* 메타(번호·날짜·라벨)는 등폭으로 적는다. 한글은 자동으로 본문 글꼴로 떨어진다 */
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "D2Coding", monospace;
 
-
-  --radius: 16px;
-  --radius-sm: 10px;
-  --radius-full: 999px;
-
-  --header-h: 60px;
+  --header-h: 56px;
+  --page-w: 900px; /* 문서 칼럼 폭 */
+  --page-pad: 40px; /* 칼럼 안쪽 좌우 여백 */
+  --grid-size: 28px;
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --bg: oklch(20.69% 0.01 285.5);
-  --bg-soft: oklch(22.91% 0.012 285.5);
-  --bg-elevated: oklch(27.2% 0.015 285.4);
-  --bg-card: oklch(23.81% 0.013 285.3);
+  --bg: #16171a;
+  --bg-soft: #1a1c20;
+  --bg-elevated: #23262b;
+  --bg-card: #1c1e22;
 
-  --text: oklch(92.96% 0.005 247.9);
-  --text-sub: oklch(77.91% 0.016 251.2);
-  --text-weak: oklch(56.16% 0.025 254.5);
+  --bg-inverse: #e8eaec;
+  --text-inverse: #16171a;
 
-  --primary: oklch(66.6% 0.174 256.8);
-  --primary-hover: oklch(72.63% 0.14 256.6);
-  --primary-weak: oklch(28.61% 0.054 261.5);
-  --primary-weak-text: oklch(75.85% 0.122 256.1);
+  --text: #e8eaec;
+  --text-sub: #a2a8b0;
+  --text-weak: #878d95; /* 가장 밝은 판(라벨 칸 #23262b) 위에서도 4.53:1 */
 
-  --danger: oklch(69.18% 0.178 18.5);
-  --danger-weak: oklch(28.42% 0.037 8.8);
+  --primary: oklch(72% 0.15 258);
+  --primary-hover: oklch(80% 0.12 258);
+  --primary-weak: oklch(28% 0.06 258);
+  --primary-weak-text: oklch(78% 0.12 258);
 
-  --border: oklch(27.2% 0.015 285.4);
-  --border-strong: oklch(32.65% 0.023 285.1);
+  --danger: oklch(70% 0.17 25);
+  --danger-weak: oklch(28% 0.06 25);
 
-  --code-bg: oklch(25.54% 0.015 285.3);
+  --border: #2a2d32;
+  --border-strong: #b4b9bf; /* 어두운 판 위 9.08:1 — 골격이 확실히 보이는 세기 */
+  --rule: #65696f;
+  --gridline: #1f2125;
 
-  /* 어두운 배경에서는 그림자가 훨씬 진해야 형태가 보인다 */
-  --elevation-1:
-    0 0.3px 0.4px oklch(0% 0 0 / 0.26),
-    0 0.9px 1.2px -0.7px oklch(0% 0 0 / 0.26),
-    0 2.1px 2.8px -1.4px oklch(0% 0 0 / 0.26);
+  --code-bg: #0e0f11;
+  --code-text: #dfe2e5;
 
-  --elevation-2:
-    0 0.3px 0.4px oklch(0% 0 0 / 0.26),
-    0 1.5px 2px -0.4px oklch(0% 0 0 / 0.26),
-    0 3.4px 4.5px -0.9px oklch(0% 0 0 / 0.26),
-    0 7.6px 10.1px -1.4px oklch(0% 0 0 / 0.26);
+  --header-bg: #0b0c0e;
+  --header-text: #e8eaec;
+  --header-text-weak: #80868e;
 
-  --elevation-3:
-    0 0.3px 0.4px oklch(0% 0 0 / 0.3),
-    0 2.4px 3.2px -0.3px oklch(0% 0 0 / 0.3),
-    0 4.6px 6.1px -0.6px oklch(0% 0 0 / 0.3),
-    0 8.1px 10.8px -0.9px oklch(0% 0 0 / 0.3),
-    0 14.2px 18.9px -1.1px oklch(0% 0 0 / 0.3),
-    0 24.3px 32.4px -1.4px oklch(0% 0 0 / 0.3);
+  --elevation-1: none;
+  --elevation-2: 5px 5px 0 #0b0c0e;
+  --elevation-3: 8px 8px 0 #0b0c0e;
 }

@@ -1,4 +1,4 @@
-/* 리셋 + 공통 레이아웃 (헤더/컨테이너/푸터) */
+/* 리셋 + 공통 레이아웃 (헤더/문서 칼럼/푸터) */
 *,
 *::before,
 *::after {
@@ -24,6 +24,14 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* 배경 격자는 목록 화면에만 깐다. 글 상세는 본문에 이미지와 수식이 들어가서
+   배경이 조용해야 읽힌다 — 그래서 body 클래스로 켜고 끈다. */
+body.grid-bg {
+  background-image: linear-gradient(var(--gridline) 1px, transparent 1px),
+    linear-gradient(90deg, var(--gridline) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
 }
 
 a {
@@ -52,12 +60,18 @@ select {
 }
 
 ::selection {
-  background: var(--primary-weak);
-  color: var(--primary-weak-text);
+  background: var(--bg-inverse);
+  color: var(--text-inverse);
+}
+
+/* 등폭 메타 조판을 쓰는 곳이 많아 한 곳에 모아둔다 */
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 /* 테마 전환 순간에는 모든 전환을 끈다 (theme.js가 잠깐 붙였다 뗀다).
-   전환 중 색 토큰이 바뀌면 다층 그림자가 이전 값에 고착되기 때문이다. */
+   전환 중 색 토큰이 바뀌면 그림자 같은 값이 이전 값에 고착되기 때문이다. */
 .theme-switching,
 .theme-switching *,
 .theme-switching *::before,
@@ -66,102 +80,141 @@ select {
 }
 
 /* ---------- 헤더 ---------- */
+/* 두 테마 모두 어두운 바. 화면 끝까지 채우고 안쪽 내용만 칼럼 폭으로 묶는다 */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 100;
   height: var(--header-h);
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+  color: var(--header-text);
+  background: var(--header-bg);
 }
 
 .site-header .inner {
-  max-width: 860px;
+  max-width: var(--page-w);
   height: 100%;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--page-pad);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 }
 
 .site-logo {
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
 }
 
-.site-logo .dot {
-  color: var(--primary);
+.site-logo .suffix {
+  opacity: 0.45;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 22px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--header-text-weak);
 }
 
-.icon-btn {
-  width: 38px;
-  height: 38px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  color: var(--text-sub);
-  transition: background 0.15s ease, color 0.15s ease;
+.nav-link {
+  padding-bottom: 2px;
+  border-bottom: 1.5px solid transparent;
+  transition: color 0.15s ease;
 }
 
-.icon-btn:hover {
-  background: var(--bg-elevated);
-  color: var(--text);
+.nav-link:hover {
+  color: var(--header-text);
 }
 
-.icon-btn svg {
-  width: 20px;
-  height: 20px;
+.nav-link.active {
+  color: var(--header-text);
+  border-bottom-color: var(--header-text);
 }
 
-/* 테마 토글: 현재 테마에 맞는 아이콘만 표시 */
-[data-theme="dark"] .icon-sun {
-  display: block;
+/* 테마 토글: 아이콘 대신 "지금 누르면 갈 곳"을 글자로 적는다 */
+.theme-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 2px 7px;
+  color: var(--header-text-weak);
+  border: 1px solid color-mix(in srgb, var(--header-text) 28%, transparent);
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
-[data-theme="dark"] .icon-moon {
+
+.theme-btn:hover {
+  color: var(--header-text);
+  border-color: color-mix(in srgb, var(--header-text) 60%, transparent);
+}
+
+.theme-btn .to-light {
   display: none;
 }
-.icon-sun {
-  display: none;
-}
-.icon-moon {
-  display: block;
+
+[data-theme="dark"] .theme-btn .to-light {
+  display: inline;
 }
 
-/* ---------- 본문 컨테이너 ---------- */
+[data-theme="dark"] .theme-btn .to-dark {
+  display: none;
+}
+
+/* ---------- 문서 칼럼 ----------
+   좌우 여백은 컨테이너가 아니라 안쪽 구획이 갖는다. 구획의 규칙선이
+   칼럼 폭 끝까지 닿아야 문서처럼 보이기 때문이다. */
 .container {
   width: 100%;
-  max-width: 860px;
+  max-width: var(--page-w);
   margin: 0 auto;
-  padding: 0 20px;
   flex: 1;
+}
+
+/* 칼럼 안 구획의 표준 좌우 여백 */
+.bleed {
+  padding-left: var(--page-pad);
+  padding-right: var(--page-pad);
 }
 
 /* ---------- 푸터 ---------- */
 .site-footer {
-  margin-top: 80px;
-  padding: 32px 20px 48px;
-  text-align: center;
+  max-width: var(--page-w);
+  width: 100%;
+  margin: 72px auto 0;
+  padding: 20px var(--page-pad) 34px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   color: var(--text-weak);
-  font-size: 13px;
-  border-top: 1px solid var(--border);
+  border-top: 1.5px solid var(--border-strong);
 }
 
 .site-footer a {
-  color: var(--text-sub);
-  font-weight: 600;
+  color: var(--text-weak);
+  transition: color 0.15s ease;
 }
 
 .site-footer a:hover {
-  color: var(--primary);
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --page-pad: 20px;
+  }
+
+  .header-actions {
+    gap: 14px;
+    font-size: 11.5px;
+  }
+
+  .site-logo {
+    font-size: 13px;
+  }
 }

@@ -16,8 +16,15 @@ const Posts = (() => {
     return cache;
   }
 
+  // 공개된 글만. 이때 색인 번호(p.index)를 박아둔다 — 최신 글이 001이다.
+  // 목록·아카이브·글 상세가 같은 번호를 보여야 "색인"이 의미를 갖기 때문에,
+  // 화면마다 세지 않고 여기서 한 번만 정한다. 임시글은 번호를 차지하지 않는다.
   function published(posts) {
-    return posts.filter((p) => !p.draft);
+    const list = posts.filter((p) => !p.draft);
+    list.forEach((p, i) => {
+      p.index = i + 1;
+    });
+    return list;
   }
 
   // 카테고리는 "상위/하위" 경로 문자열 (하위 1단계). 표시할 땐 " › "로 변환.
@@ -103,7 +110,45 @@ const Posts = (() => {
     const d = new Date(iso);
     if (isNaN(d.getTime())) return "";
     const p = (n) => String(n).padStart(2, "0");
-    return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())}`;
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  }
+
+  // 글 상세 메타 표용. 글은 KST 기준으로 쓰므로 표시도 KST로 고정한다 —
+  // 브라우저 표준시를 따라가면 같은 글이 사람마다 다른 시각으로 보인다.
+  function formatDateTime(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    const kst = new Date(d.getTime() + 9 * 3600000);
+    const p = (n) => String(n).padStart(2, "0");
+    return (
+      `${kst.getUTCFullYear()}-${p(kst.getUTCMonth() + 1)}-${p(kst.getUTCDate())}` +
+      ` ${p(kst.getUTCHours())}:${p(kst.getUTCMinutes())} KST`
+    );
+  }
+
+  // 목록에 붙는 색인 번호 (001, 002 …)
+  function num(i) {
+    return String(i).padStart(3, "0");
+  }
+
+  // 히어로에 얹는 수치. 색인 표지처럼 규모를 먼저 보여준다.
+  function stats(posts) {
+    const latest = posts.reduce((acc, p) => {
+      const t = p.updated || p.date;
+      return t > acc ? t : acc;
+    }, "");
+    return {
+      entries: posts.length,
+      categories: new Set(posts.map((p) => topOf(p.category))).size,
+      updated: latest ? formatDate(latest) : "",
+    };
+  }
+
+  // 색인 순서상의 앞/뒤 글. posts는 최신순이므로 prev가 더 새 글이다.
+  function neighbors(posts, slug) {
+    const i = posts.findIndex((p) => p.slug === slug);
+    if (i === -1) return { index: 0, prev: null, next: null };
+    return { index: i + 1, prev: posts[i - 1] || null, next: posts[i + 1] || null };
   }
 
   return {
@@ -117,5 +162,9 @@ const Posts = (() => {
     isNew,
     filter,
     formatDate,
+    formatDateTime,
+    num,
+    stats,
+    neighbors,
   };
 })();

@@ -1,103 +1,208 @@
-/* 글 상세 페이지: 헤더 메타 + 본문 타이포그래피(prose) */
+/* 글 상세: 색인 머리말 + 메타 표 + 본문 조판(prose)
+   목록 화면과 달리 배경 격자를 깔지 않는다 — 본문에 이미지와 수식이
+   들어가므로 배경이 조용해야 읽힌다. */
 
 .post-view {
-  max-width: 760px;
+  max-width: calc(700px + var(--page-pad) * 2);
   margin: 0 auto;
-  padding-top: 48px;
+  padding: 0 var(--page-pad) 72px;
 }
 
-.post-head .category {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--primary);
+/* ---------- 머리말 ---------- */
+/* 비어 있는 동안(로딩·실패) 자리를 차지하지 않게 한다 */
+.post-crumb:empty,
+.post-head:empty,
+.post-spec:empty,
+.post-nav:empty {
+  display: none;
 }
 
-.post-head h1 {
-  margin-top: 10px;
-  font-size: 34px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.35;
+.post-crumb {
+  padding-top: 44px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-weak);
+  text-transform: lowercase;
 }
 
-.post-head .meta {
+.post-crumb a:hover {
+  color: var(--text);
+}
+
+.post-crumb .sep {
+  padding: 0 5px;
+  color: var(--rule);
+}
+
+.post-crumb .here {
+  color: var(--text);
+}
+
+.post-head {
+  --cat: oklch(45% 0.15 var(--cat-hue, 258));
+  --cat-on: #ffffff;
+  padding: 26px 0 22px;
+}
+
+[data-theme="dark"] .post-head {
+  --cat: oklch(72% 0.15 var(--cat-hue, 258));
+  --cat-on: #12141a;
+}
+
+.post-head .label-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-  font-size: 14px;
+  gap: 10px;
+  margin-bottom: 18px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.post-head .index {
   color: var(--text-weak);
 }
 
-.post-head .tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 18px;
+.post-head .category {
+  padding: 2px 8px;
+  color: var(--cat-on);
+  background: var(--cat);
 }
 
-.post-head .divider {
-  margin: 32px 0 40px;
-  border: none;
-  border-top: 1px solid var(--border);
+.post-head h1 {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+/* ---------- 메타 표 ----------
+   작성·수정·태그·출처를 표로 세운다. 논문 머리말에서 가져온 장치로,
+   학습 정리글에서 "언제 쓰고 언제 고쳤는지"가 실제로 자주 궁금해진다. */
+.post-spec {
+  margin-bottom: 44px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.post-spec .spec-row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+}
+
+.post-spec .spec-row:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+
+.post-spec dt {
+  padding: 8px 12px;
+  color: var(--text-weak);
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border);
+}
+
+.post-spec dd {
+  padding: 8px 12px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.post-spec dd.weak {
+  color: var(--text-weak);
+}
+
+.post-spec .badge-draft {
+  padding: 1px 6px;
+  color: var(--danger);
+  border: 1px solid var(--danger);
 }
 
 /* ---------- 본문 ---------- */
 .prose {
-  font-size: 16.5px;
-  line-height: 1.85;
+  counter-reset: sec fig eq;
+  font-size: 16px;
+  line-height: 1.88;
   color: var(--text);
   word-break: keep-all;
   overflow-wrap: break-word;
 }
 
 .prose > * + * {
-  margin-top: 1em;
+  margin-top: 26px;
 }
 
 .prose h1,
-.prose h2,
 .prose h3,
 .prose h4 {
-  margin-top: 2.2em;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  margin-top: 40px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
   line-height: 1.4;
 }
 
 .prose h1 {
-  font-size: 28px;
-}
-
-.prose h2 {
-  font-size: 24px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
+  font-size: 27px;
 }
 
 .prose h3 {
-  font-size: 20px;
+  font-size: 18.5px;
 }
 
 .prose h4 {
-  font-size: 17px;
+  font-size: 16.5px;
+  color: var(--text-sub);
+}
+
+/* 절 제목 앞에 두 자리 번호를 붙인다. 번호는 CSS 카운터라
+   마크다운 원문에는 들어가지 않는다 — 노션에서 그대로 써도 된다.
+   규칙선은 번호를 뺀 제목 글자 아래에만 깔린다(.h-text는 render.js가 감싼다). */
+.prose h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 44px;
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.4;
+  counter-increment: sec;
+}
+
+.prose h2::before {
+  content: counter(sec, decimal-leading-zero);
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--primary);
+}
+
+.prose h2 .h-text {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 9px;
+  border-bottom: 1.5px solid var(--border-strong);
 }
 
 .prose a {
   color: var(--primary);
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: color-mix(in srgb, var(--primary) 35%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--primary) 40%, transparent);
 }
 
 .prose a:hover {
-  text-decoration-color: var(--primary);
+  color: var(--primary-hover);
+  text-decoration-color: currentColor;
 }
 
 .prose strong {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .prose ul,
@@ -110,87 +215,167 @@
 }
 
 .prose blockquote {
-  padding: 14px 20px;
-  background: var(--bg-soft);
-  border-left: 3px solid var(--primary);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 14px 18px;
   color: var(--text-sub);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong);
+  border-left-width: 8px;
 }
 
 .prose blockquote > * + * {
   margin-top: 0.6em;
 }
 
-.prose img {
-  border-radius: var(--radius-sm);
-  margin: 8px auto;
+.prose hr {
+  margin: 44px 0;
+  border: none;
+  border-top: 1.5px solid var(--border-strong);
 }
 
-.prose hr {
-  margin: 2.5em 0;
-  border: none;
-  border-top: 1px solid var(--border-strong);
+/* ---------- 도판 ----------
+   render.js가 단독 이미지 문단을 figure로 감싸고 alt를 캡션으로 옮긴다.
+   번호는 카운터라 본문 어디서든 "FIG.02" 로 참조할 수 있다. */
+.prose figure {
+  counter-increment: fig;
+}
+
+/* 폭을 강제하지 않는다 — 작은 도표를 칼럼 폭까지 늘리면 뭉개진다.
+   캡션 규칙선은 칼럼 끝까지 가서 그림과 본문을 묶어준다. */
+.prose figure img {
+  max-width: 100%;
+  border: 1.5px solid var(--border-strong);
+}
+
+.prose figcaption {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-weak);
+}
+
+.prose figcaption::before {
+  content: "FIG." counter(fig, decimal-leading-zero);
+  color: var(--text-sub);
+}
+
+/* 캡션 글이 있을 때만 구분 기호를 넣는다 */
+.prose figcaption:not(:empty)::before {
+  content: "FIG." counter(fig, decimal-leading-zero) " — ";
+}
+
+/* 본문에 그냥 놓인 이미지(문단 안에 글과 섞인 경우)도 테두리는 맞춰준다 */
+.prose p img {
+  border: 1.5px solid var(--border-strong);
 }
 
 /* ---------- 토글 (노션 toggle → details) ---------- */
 .prose details {
-  padding: 14px 20px;
-  background: var(--bg-soft);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong);
 }
 
 .prose details > summary {
   cursor: pointer;
-  font-weight: 700;
-  color: var(--text-sub);
+  font-weight: 600;
   user-select: none;
 }
 
-.prose details > summary:hover {
-  color: var(--primary);
+.prose details > summary::marker {
+  color: var(--text-weak);
 }
 
 .prose details[open] > summary {
   margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
 }
 
-/* ---------- 수식 ---------- */
+/* ---------- 수식 ----------
+   블록 수식은 위아래 규칙선으로 본문에서 떼어내고 오른쪽에 식 번호를 준다.
+   번호가 있으면 "식 (2)에서" 처럼 본문에서 가리킬 수 있다. */
 .math-block {
-  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 18px;
+  background: var(--bg-card);
+  border-top: 1.5px solid var(--border-strong);
+  border-bottom: 1.5px solid var(--border-strong);
+  counter-increment: eq;
   overflow-x: auto;
 }
 
-.prose .katex {
-  font-size: 1.08em;
+.math-block > .katex-display {
+  flex: 1;
+  margin: 0;
 }
 
-/* ---------- 콜아웃 ---------- */
+.math-block::after {
+  content: "(" counter(eq) ")";
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-weak);
+}
+
+.prose .katex {
+  font-size: 1.06em;
+}
+
+/* ---------- 콜아웃 ----------
+   왼쪽 8px 색 블록으로 종류를 표시한다. 라벨 글자는 붙이지 않는다 —
+   노션 원문에 없는 글자라서다. (라벨을 원하면 아래 .callout::before 주석 해제) */
 .prose .callout {
   --co-color: var(--primary);
-  --co-bg: var(--primary-weak);
-  padding: 12px 20px;
-  background: var(--co-bg);
-  border-left: 3px solid var(--co-color);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 14px 18px;
   color: var(--text);
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong);
+  border-left: 8px solid var(--co-color);
 }
 
-/* 인용구·콜아웃 안의 제목은 본문 섹션 제목이 아니므로
-   구분선(밑줄)과 큰 여백을 없앤다 — 안 그러면 아래쪽만 벌어져 보인다 */
+/*
+.prose .callout::before {
+  content: var(--co-label, "NOTE");
+  display: block;
+  margin-bottom: 7px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--co-color);
+}
+*/
+
+/* 인용구·콜아웃 안의 제목은 본문 절 제목이 아니므로
+   번호와 규칙선을 없앤다 — 안 그러면 절 번호가 엉뚱하게 올라간다 */
 .prose blockquote :is(h1, h2, h3, h4) {
+  display: block;
   margin-top: 0.8em;
+  font-size: 1.05em;
+  counter-increment: none;
+}
+
+.prose blockquote h2::before {
+  content: none;
+}
+
+.prose blockquote h2 .h-text {
   padding-bottom: 0;
   border-bottom: none;
 }
 
 /* 줄 높이가 첫 줄 위·끝 줄 아래에 만드는 여분을 걷어낸다.
    em이 아닌 고정값이어야 자식이 문단이든 제목이든 위아래가 같아진다 */
-.prose .callout > :first-child {
+.prose .callout > :first-child,
+.prose blockquote > :first-child {
   margin-top: -5px;
 }
 
-.prose .callout > :last-child {
+.prose .callout > :last-child,
+.prose blockquote > :last-child {
   margin-bottom: -5px;
 }
 
@@ -199,151 +384,236 @@
    미지원 브라우저는 위의 고정 마진으로 근사 처리된다 */
 @supports (text-box-trim: trim-both) {
   .prose .callout > :first-child,
-  .prose .callout > :last-child {
+  .prose .callout > :last-child,
+  .prose blockquote > :first-child,
+  .prose blockquote > :last-child {
     margin-top: 0;
     margin-bottom: 0;
     text-box-edge: cap alphabetic;
   }
 
-  .prose .callout > :first-child {
+  .prose .callout > :first-child,
+  .prose blockquote > :first-child {
     text-box-trim: trim-start;
   }
 
-  .prose .callout > :last-child {
+  .prose .callout > :last-child,
+  .prose blockquote > :last-child {
     text-box-trim: trim-end;
   }
 
   /* 자식이 하나뿐이면 위아래 모두 다듬어야 한다 */
-  .prose .callout > :first-child:last-child {
+  .prose .callout > :first-child:last-child,
+  .prose blockquote > :first-child:last-child {
     text-box-trim: trim-both;
   }
 }
 
+/* 종류별 색. 밝기를 고정해 두면 어느 색이든 옆의 잉크 테두리와 세기가 맞는다 */
+.prose .callout-note {
+  --co-color: oklch(50% 0.15 258);
+  --co-label: "NOTE";
+}
+
 .prose .callout-tip {
-  --co-color: #12b76a;
-  --co-bg: #e9f9f1;
+  --co-color: oklch(52% 0.14 145);
+  --co-label: "TIP";
 }
 
 .prose .callout-important {
-  --co-color: #7a5af8;
-  --co-bg: #f1eeff;
+  --co-color: oklch(50% 0.18 295);
+  --co-label: "IMPORTANT";
 }
 
 .prose .callout-warning {
-  --co-color: #f79009;
-  --co-bg: #fef4e6;
+  --co-color: oklch(58% 0.16 55);
+  --co-label: "WARNING";
 }
 
 .prose .callout-caution {
-  --co-color: #f04452;
-  --co-bg: #fdedee;
+  --co-color: oklch(53% 0.2 20);
+  --co-label: "CAUTION";
+}
+
+[data-theme="dark"] .prose .callout-note {
+  --co-color: oklch(70% 0.14 258);
 }
 
 [data-theme="dark"] .prose .callout-tip {
-  --co-bg: #12301f;
+  --co-color: oklch(72% 0.14 145);
 }
 
 [data-theme="dark"] .prose .callout-important {
-  --co-bg: #241d45;
+  --co-color: oklch(70% 0.16 295);
 }
 
 [data-theme="dark"] .prose .callout-warning {
-  --co-bg: #3a2a12;
+  --co-color: oklch(75% 0.15 55);
 }
 
 [data-theme="dark"] .prose .callout-caution {
-  --co-bg: #3a2226;
+  --co-color: oklch(70% 0.18 20);
 }
 
-/* 인라인 코드 */
+/* ---------- 코드 ---------- */
 .prose code:not(pre code) {
-  padding: 2px 6px;
-  font-size: 0.88em;
-  font-family: "JetBrains Mono", "D2Coding", Consolas, "Courier New", monospace;
-  color: var(--primary-weak-text);
-  background: var(--primary-weak);
-  border-radius: 6px;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 0.87em;
+  color: var(--text);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
 }
 
-/* 코드 블록 */
+/* render.js가 pre를 .code-block으로 감싸고 언어 머리줄을 붙인다 */
+.prose .code-block {
+  border: 1.5px solid var(--border-strong);
+}
+
+.prose .code-head {
+  display: flex;
+  justify-content: flex-end;
+  padding: 7px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-weak);
+  background: var(--bg-elevated);
+  border-bottom: 1.5px solid var(--border-strong);
+}
+
 .prose pre {
-  padding: 18px 20px;
+  padding: 14px 14px;
   background: var(--code-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  color: var(--code-text);
   overflow-x: auto;
-  line-height: 1.6;
+  line-height: 1.72;
+}
+
+.prose .code-block > pre {
+  border: none;
 }
 
 .prose pre code {
-  font-size: 14px;
-  font-family: "JetBrains Mono", "D2Coding", Consolas, "Courier New", monospace;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: inherit;
   background: transparent;
+  border: none;
   padding: 0;
 }
 
-/* highlight.js 배경은 우리 pre 배경을 따르게 */
 .prose pre code.hljs {
   background: transparent;
   padding: 0;
 }
 
-/* 테이블 */
+/* ---------- 표 ---------- */
+.prose .table-wrap {
+  overflow-x: auto;
+  border: 1.5px solid var(--border-strong);
+}
+
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 15px;
-  display: block;
-  overflow-x: auto;
+  font-size: 14.5px;
+  background: var(--bg-card);
 }
 
 .prose th,
 .prose td {
-  padding: 10px 14px;
-  border: 1px solid var(--border-strong);
+  padding: 9px 12px;
   text-align: left;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.prose th:last-child,
+.prose td:last-child {
+  border-right: none;
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .prose th {
-  background: var(--bg-soft);
-  font-weight: 700;
-}
-
-/* ---------- 하단 ---------- */
-.post-footer {
-  margin-top: 64px;
-}
-
-.post-footer .back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-sub);
-  padding: 10px 18px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-weak);
   background: var(--bg-elevated);
-  border-radius: var(--radius-full);
-  transition: all 0.15s ease;
+  border-bottom: 1.5px solid var(--border-strong);
 }
 
-.post-footer .back-link:hover {
-  color: var(--primary);
+/* ---------- 하단: 이전/다음 글 ---------- */
+.post-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 56px;
+}
+
+.post-nav a {
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-strong);
+  transition: box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.post-nav a:hover {
+  box-shadow: var(--elevation-2);
+  transform: translate(-2px, -2px);
+}
+
+.post-nav a.next {
+  text-align: right;
+}
+
+.post-nav .dir {
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-weak);
+}
+
+.post-nav .name {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 한쪽만 있을 때 반대편 칸은 비워 둔다 — 남은 카드가 폭을 다 먹으면
+   "이게 이전인지 다음인지"가 헷갈린다 */
+.post-nav .blank {
+  border: 1.5px dashed var(--border);
 }
 
 .comments {
-  margin-top: 48px;
+  margin-top: 56px;
 }
 
 /* 로딩/에러 */
 .post-loading {
-  padding: 100px 0;
-  text-align: center;
+  padding: 100px var(--page-pad);
+  font-family: var(--font-mono);
+  font-size: 12px;
   color: var(--text-weak);
 }
 
-@media (max-width: 640px) {
-  .post-view {
+.post-loading a {
+  color: var(--text);
+  border-bottom: 1px solid var(--rule);
+}
+
+@media (max-width: 720px) {
+  .post-crumb {
     padding-top: 32px;
   }
 
@@ -353,5 +623,21 @@
 
   .prose {
     font-size: 15.5px;
+  }
+
+  .post-spec .spec-row {
+    grid-template-columns: 78px minmax(0, 1fr);
+  }
+
+  .post-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .post-nav .blank {
+    display: none;
+  }
+
+  .post-nav a.next {
+    text-align: left;
   }
 }

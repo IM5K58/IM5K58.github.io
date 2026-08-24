@@ -1,12 +1,13 @@
 // @ts-check
-// archive.html 진입점: 전체 글을 연도별로 묶어 보여주고 카테고리로 걸러낸다
+// archive.html 진입점: 전체 글을 연도별로 묶어 표로 보여주고 카테고리로 걸러낸다
 (async () => {
   const bodyEl = document.getElementById("archive-body");
   const countEl = document.getElementById("archive-count");
   const tabsEl = document.getElementById("category-tabs");
   const subTabsEl = document.getElementById("subcategory-tabs");
 
-  const state = { category: "" };
+  // 글 상세의 위치 표시(index / ai / …)에서 넘어올 수 있게 ?cat= 을 받는다
+  const state = { category: new URLSearchParams(location.search).get("cat") || "" };
   let allPosts = [];
 
   // 속성 값 안에서도 안전하도록 따옴표까지 이스케이프한다.
@@ -19,19 +20,19 @@
 
   const tab = (label, value, count, active) => `
     <button class="tab ${active ? "active" : ""}" data-category="${esc(value)}">
-      ${esc(label)}${count != null ? `<span class="count">${count}</span>` : ""}
+      ${esc(label)}${count != null ? `<span class="count">${String(count).padStart(2, "0")}</span>` : ""}
     </button>`;
 
   function renderTabs() {
     const cats = Posts.categories(allPosts);
     const activeTop = state.category ? Posts.topOf(state.category) : "";
     tabsEl.innerHTML =
-      tab("전체", "", allPosts.length, !state.category) +
+      tab("ALL", "", allPosts.length, !state.category) +
       cats.map(([c, n]) => tab(c, c, n, activeTop === c)).join("");
 
     const subs = activeTop ? Posts.subcategories(allPosts, activeTop) : [];
     subTabsEl.innerHTML = subs.length
-      ? tab("전체", activeTop, null, state.category === activeTop) +
+      ? tab("ALL", activeTop, null, state.category === activeTop) +
         subs
           .map(([c, n]) =>
             tab(c, `${activeTop}/${c}`, n, state.category === `${activeTop}/${c}`)
@@ -53,6 +54,7 @@
 
   function monthDay(iso) {
     const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
     const p = (n) => String(n).padStart(2, "0");
     return `${p(d.getMonth() + 1)}.${p(d.getDate())}`;
   }
@@ -60,28 +62,31 @@
   function renderList() {
     const posts = Posts.filter(allPosts, { category: state.category });
     countEl.textContent = state.category
-      ? `${Posts.catDisplay(state.category)} · ${posts.length}편`
-      : `${allPosts.length}편`;
+      ? `${Posts.catDisplay(state.category)} · ${Posts.num(posts.length)}`
+      : `TOTAL ${Posts.num(posts.length)}`;
 
     if (!posts.length) {
-      bodyEl.innerHTML = `<div class="empty-state"><p>이 카테고리에는 아직 글이 없어요.</p></div>`;
+      bodyEl.innerHTML = `<div class="empty-state">이 카테고리에는 아직 글이 없습니다</div>`;
       return;
     }
 
-    bodyEl.innerHTML = groupByYear(posts)
+    bodyEl.innerHTML = `<div class="archive-wrap">${groupByYear(posts)
       .map(
         ([year, list]) => `
       <section class="archive-year">
-        <h2 class="archive-year-label">${year}<span class="archive-year-count">${list.length}편</span></h2>
+        <h2 class="archive-year-label">${year}<span class="archive-year-count">${String(
+          list.length
+        ).padStart(2, "0")} ENTRIES</span></h2>
         <ul class="archive-list">
           ${list
             .map(
               (p) => `
             <li>
               <a class="archive-row" style="--cat-hue: ${Posts.catHue(p.category)}" href="/post.html?slug=${encodeURIComponent(p.slug)}">
+                <span class="archive-index">${Posts.num(p.index)}</span>
                 <span class="archive-date">${monthDay(p.date)}</span>
                 <span class="archive-title">${esc(p.title)}</span>
-                <span class="archive-cat">${esc(Posts.catDisplay(p.category))}</span>
+                <span class="archive-cat"><span>${esc(Posts.catDisplay(p.category))}</span></span>
               </a>
             </li>`
             )
@@ -89,7 +94,7 @@
         </ul>
       </section>`
       )
-      .join("");
+      .join("")}</div>`;
   }
 
   const onTabClick = (e) => {
@@ -107,7 +112,10 @@
     renderTabs();
     renderList();
   } catch (err) {
-    countEl.textContent = "";
-    bodyEl.innerHTML = `<div class="empty-state"><p>글 목록을 불러오지 못했어요.<br>${esc(err.message)}</p></div>`;
+    // 예전 HTML이 캐시에서 뜨면 요소가 없을 수 있다 — 오류 처리까지 죽지 않게 한다
+    if (countEl) countEl.textContent = "";
+    if (bodyEl) {
+      bodyEl.innerHTML = `<div class="empty-state">글 목록을 불러오지 못했습니다 · ${esc(err.message)}</div>`;
+    }
   }
 })();

@@ -112,8 +112,61 @@ const Render = (() => {
     return DOMPurify.sanitize(raw);
   }
 
-  // 렌더 후처리: 코드 하이라이팅 + 외부 링크 새 탭 + 콜아웃 변환
+  // 렌더 후처리: 조판 장치(절 번호·도판·코드 머리줄·표 감싸기) + 링크 + 콜아웃.
+  // 전부 DOM 조작이라 마크다운 원문에는 아무 글자도 들어가지 않는다 —
+  // 노션에서 쓴 글이 그대로 왕복해야 하기 때문이다.
   function enhance(rootEl) {
+    // 절 제목: 번호는 CSS 카운터가 붙이고, 규칙선은 제목 글자에만 깔려야 하므로
+    // 글자를 span으로 감싼다 (h2 자체가 flex 컨테이너가 된다)
+    rootEl.querySelectorAll("h2").forEach((h) => {
+      if (h.querySelector(".h-text")) return;
+      const span = document.createElement("span");
+      span.className = "h-text";
+      while (h.firstChild) span.append(h.firstChild);
+      h.append(span);
+    });
+
+    // 단독 이미지 문단 → figure + figcaption(alt). 캡션 번호는 CSS 카운터.
+    // 노션 동기화는 블록 캡션을 alt로 넣지만, 캡션이 없으면 "image"가 들어온다.
+    // 그런 껍데기 alt는 캡션으로 쓰지 않고 번호만 남긴다.
+    const GENERIC_ALT = /^(image|img|untitled|이미지|사진)$/i;
+    rootEl.querySelectorAll("p > img").forEach((img) => {
+      const p = img.parentElement;
+      if (!p || p.children.length !== 1 || p.textContent.trim()) return;
+      const alt = (img.getAttribute("alt") || "").trim();
+      const fig = document.createElement("figure");
+      const cap = document.createElement("figcaption");
+      cap.textContent = GENERIC_ALT.test(alt) ? "" : alt;
+      p.replaceWith(fig);
+      fig.append(img, cap);
+    });
+
+    // 코드 블록: 언어 머리줄을 얹는다. 하이라이터가 class를 건드리기 전에 읽는다.
+    rootEl.querySelectorAll("pre").forEach((pre) => {
+      if (pre.parentElement?.classList.contains("code-block")) return;
+      const code = pre.querySelector("code");
+      const lang = code?.className.match(/language-([\w+#.-]+)/);
+      const wrap = document.createElement("div");
+      wrap.className = "code-block";
+      pre.replaceWith(wrap);
+      if (lang) {
+        const head = document.createElement("div");
+        head.className = "code-head";
+        head.textContent = lang[1].toUpperCase();
+        wrap.append(head);
+      }
+      wrap.append(pre);
+    });
+
+    // 표는 좁은 화면에서 가로로 넘치므로 자기 상자 안에서만 스크롤되게 감싼다
+    rootEl.querySelectorAll("table").forEach((t) => {
+      if (t.parentElement?.classList.contains("table-wrap")) return;
+      const wrap = document.createElement("div");
+      wrap.className = "table-wrap";
+      t.replaceWith(wrap);
+      wrap.append(t);
+    });
+
     rootEl.querySelectorAll("pre code").forEach((el) => {
       if (window.hljs) hljs.highlightElement(el);
     });

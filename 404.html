@@ -5,40 +5,46 @@
   <meta http-equiv="Content-Security-Policy"
         content="script-src 'self' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>페이지를 찾을 수 없어요 — Kyumswriting</title>
+  <title>페이지를 찾을 수 없습니다 — Kyumswriting</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" integrity="sha384-GIdEBaqGN9mNkDkMkzMHW8EKUqtpPIe/sLj1X7DIrnc9uPtLROJgmuDlh+3rBw0j" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5.3.0/latin.css" integrity="sha384-GDuWkQ2vJ3WLB+Pwjr2vmR7AG/si+whIv67zaJbePaDliRT2+WESPt1RYPPu5/4P" crossorigin="anonymous">
   <link rel="stylesheet" href="/css/theme.css">
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/components.css">
   <script src="/js/theme.js"></script>
 </head>
-<body>
+<body class="grid-bg">
   <header class="site-header">
     <div class="inner">
-      <a class="site-logo" href="/">Kyumswriting<span class="dot">.</span></a>
-      <div class="header-actions">
-        <a class="nav-link" href="/archive.html">아카이브</a>
-        <a class="icon-btn" href="/admin.html" title="글 관리" aria-label="글 관리">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-        </a>
-        <button class="icon-btn" id="theme-toggle" title="테마 전환" aria-label="테마 전환">
-          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+      <a class="site-logo" href="/">kyumswriting<span class="suffix">.log</span></a>
+      <nav class="header-actions">
+        <a class="nav-link" href="/">index</a>
+        <a class="nav-link" href="/archive.html">archive</a>
+        <a class="nav-link" href="/admin.html">write</a>
+        <button class="theme-btn" id="theme-toggle" title="테마 전환" aria-label="테마 전환">
+          <span class="to-dark">DARK</span><span class="to-light">LIGHT</span>
         </button>
-      </div>
+      </nav>
     </div>
   </header>
-  <main class="container" style="display:flex;align-items:center;justify-content:center">
-    <div class="empty-state">
-      <h1 style="font-size:22px;margin-bottom:8px;color:var(--text)">페이지를 찾을 수 없어요</h1>
-      <p style="margin-bottom:24px">주소가 바뀌었거나 삭제된 글일 수 있어요.</p>
-      <a class="btn btn-primary" href="/">홈으로 가기</a>
+
+  <main class="container">
+    <section class="page-head">
+      <p class="eyebrow">ERROR 404</p>
+      <div class="row">
+        <h1>페이지를 찾을 수 없습니다</h1>
+      </div>
+    </section>
+    <div class="tab-bar" style="padding-top: 28px">
+      <p style="font-size: 15px; color: var(--text-sub)">주소가 바뀌었거나 삭제된 글일 수 있습니다.</p>
+      <div style="margin-top: 6px"><a class="btn btn-primary" href="/">색인으로 돌아가기</a></div>
     </div>
   </main>
 
   <footer class="site-footer">
-    © 2026 IM5K58 · Powered by <a href="https://pages.github.com" target="_blank" rel="noopener">GitHub Pages</a>
+    <span>© 2026 IM5K58</span>
+    <a href="https://pages.github.com" target="_blank" rel="noopener">GITHUB PAGES</a>
   </footer>
 </body>
 </html>

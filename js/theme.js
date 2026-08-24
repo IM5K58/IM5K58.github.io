@@ -21,9 +21,11 @@ const Theme = {
     root.classList.add("theme-switching");
     root.dataset.theme = next;
     localStorage.setItem("theme", next);
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => root.classList.remove("theme-switching"))
-    );
+    // 백그라운드 탭에서는 rAF가 멈춰서 클래스가 그대로 남고, 그러면 그 페이지의
+    // 전환이 전부 죽는다. 타이머로 한 번 더 걷어낸다.
+    const done = () => root.classList.remove("theme-switching");
+    requestAnimationFrame(() => requestAnimationFrame(done));
+    setTimeout(done, 300);
     this.syncExtras();
     document.dispatchEvent(new CustomEvent("themechange", { detail: { theme: next } }));
   },

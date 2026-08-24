@@ -1,7 +1,10 @@
 // @ts-check
 // post.html 진입점: ?slug= 글을 fetch → 렌더 → giscus 로드
 (async () => {
+  const crumbEl = document.getElementById("post-crumb");
   const headEl = document.getElementById("post-head");
+  const specEl = document.getElementById("post-spec");
+  const navEl = document.getElementById("post-nav");
   const bodyEl = document.getElementById("post-body");
   const loadingEl = document.getElementById("post-loading");
 
@@ -15,20 +18,25 @@
     return String(s ?? "").replace(/[&<>"']/g, (c) => ESC_MAP[c]);
   }
 
+  // 예전 HTML이 캐시에서 뜨면 요소가 없을 수 있다 — 오류 처리까지 죽지 않게 한다
   function fail(msg) {
-    loadingEl.innerHTML = `${esc(msg)}<br><br><a class="back-link" href="/">← 목록으로</a>`;
+    if (!loadingEl) return;
+    loadingEl.innerHTML = `${esc(msg)}<br><br><a href="/">← 목록으로</a>`;
   }
 
   if (!slug) {
-    fail("잘못된 주소예요. (slug 없음)");
+    fail("잘못된 주소입니다 (slug 없음)");
     return;
   }
+
+  const specRow = (label, value, weak) =>
+    `<div class="spec-row"><dt>${label}</dt><dd${weak ? ' class="weak"' : ""}>${value}</dd></div>`;
 
   try {
     const res = await fetch(`/posts/${encodeURIComponent(slug)}.md?v=${Date.now()}`, {
       cache: "no-cache",
     });
-    if (!res.ok) throw new Error("글을 찾을 수 없어요.");
+    if (!res.ok) throw new Error("글을 찾을 수 없습니다");
     const md = await res.text();
 
     const { meta, body } = Render.parseFrontmatter(md);
@@ -36,29 +44,71 @@
 
     document.title = `${title} — ${CONFIG.blogTitle}`;
 
+    // 색인 정보(번호·이전/다음 글)는 index.json에서 온다. 없어도 본문은 보여야
+    // 하므로 실패를 삼키고 조판 장치만 생략한다.
+    let place = { index: 0, prev: null, next: null };
+    try {
+      place = Posts.neighbors(Posts.published(await Posts.load()), slug);
+    } catch (_) {
+      /* 색인을 못 읽으면 번호와 이전/다음 글만 빠진다 */
+    }
+
+    const catPath = meta.category || "미분류";
+    const hue = Posts.catHue(catPath);
+
+    crumbEl.innerHTML =
+      `<a href="/">index</a>` +
+      catPath
+        .split("/")
+        .map(
+          (seg, i, arr) =>
+            `<span class="sep">/</span><a href="/archive.html?cat=${encodeURIComponent(
+              arr.slice(0, i + 1).join("/")
+            )}">${esc(seg)}</a>`
+        )
+        .join("") +
+      `<span class="sep">/</span><span class="here">${esc(slug)}</span>`;
+
+    headEl.style.setProperty("--cat-hue", String(hue));
     headEl.innerHTML = `
-      <div class="category">${esc(Posts.catDisplay(meta.category))}</div>
-      <h1>${esc(title)}</h1>
-      <div class="meta">
-        <span>${Posts.formatDate(meta.date)}</span>
-        ${
-          meta.updated && meta.updated !== meta.date
-            ? `<span>·</span><span>수정 ${Posts.formatDate(meta.updated)}</span>`
-            : ""
-        }
-        ${meta.draft ? `<span class="badge-draft">임시글</span>` : ""}
+      <div class="label-row">
+        ${place.index ? `<span class="index">${Posts.num(place.index)}</span>` : ""}
+        <span class="category">${esc(Posts.catDisplay(catPath))}</span>
       </div>
-      ${
-        (meta.tags || []).length
-          ? `<div class="tags">${meta.tags
-              .map((t) => `<span class="tag-chip">${esc(t)}</span>`)
-              .join("")}</div>`
-          : ""
-      }
-      <hr class="divider">`;
+      <h1>${esc(title)}</h1>`;
+
+    const edited = meta.updated && meta.updated !== meta.date;
+    specEl.innerHTML =
+      specRow("WRITTEN", Posts.formatDateTime(meta.date) || "—") +
+      (edited ? specRow("UPDATED", Posts.formatDateTime(meta.updated)) : "") +
+      ((meta.tags || []).length
+        ? specRow("TAGS", meta.tags.map((t) => `#${esc(t)}`).join("&nbsp; "))
+        : "") +
+      (meta.source
+        ? specRow(
+            "SOURCE",
+            esc(meta.source) + (meta.syncVersion ? ` · sync v${esc(meta.syncVersion)}` : ""),
+            true
+          )
+        : "") +
+      (meta.draft ? specRow("STATE", `<span class="badge-draft">DRAFT</span>`) : "");
 
     bodyEl.innerHTML = Render.toHtml(body);
     Render.enhance(bodyEl);
+
+    // 색인 순서상의 앞/뒤 글. 한쪽이 없으면 빈 칸을 둬서 좌우가 헷갈리지 않게 한다.
+    const navCard = (p, dir, label) =>
+      p
+        ? `<a class="${dir}" href="/post.html?slug=${encodeURIComponent(p.slug)}">
+             <span class="dir">${label}</span>
+             <span class="name">${esc(p.title)}</span>
+           </a>`
+        : `<span class="blank"></span>`;
+    if (place.prev || place.next) {
+      navEl.innerHTML =
+        navCard(place.prev, "prev", `← PREV ${Posts.num(place.index - 1)}`) +
+        navCard(place.next, "next", `NEXT ${Posts.num(place.index + 1)} →`);
+    }
 
     loadingEl.remove();
     document.getElementById("post-footer").style.display = "";

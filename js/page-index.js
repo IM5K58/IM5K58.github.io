@@ -4,6 +4,7 @@
   const listEl = document.getElementById("post-list");
   const tabsEl = document.getElementById("category-tabs");
   const subTabsEl = document.getElementById("subcategory-tabs");
+  const statsEl = document.getElementById("hero-stats");
   const searchEl = /** @type {HTMLInputElement} */ (document.getElementById("search-input"));
   const tagBarEl = document.getElementById("active-tag-bar");
   const tagNameEl = document.getElementById("active-tag-name");
@@ -21,14 +22,22 @@
 
   const tab = (label, value, count, active) => `
     <button class="tab ${active ? "active" : ""}" data-category="${esc(value)}">
-      ${esc(label)}${count != null ? `<span class="count">${count}</span>` : ""}
+      ${esc(label)}${count != null ? `<span class="count">${String(count).padStart(2, "0")}</span>` : ""}
     </button>`;
+
+  function renderStats() {
+    const s = Posts.stats(allPosts);
+    statsEl.innerHTML = `
+      <span>ENTRIES ${Posts.num(s.entries)}</span>
+      <span>CATEGORIES ${String(s.categories).padStart(2, "0")}</span>
+      <span>UPDATED ${esc(s.updated)}</span>`;
+  }
 
   function renderTabs() {
     const cats = Posts.categories(allPosts); // 상위 카테고리 (하위 글 수 포함)
     const activeTop = state.category ? Posts.topOf(state.category) : "";
     tabsEl.innerHTML =
-      tab("전체", "", allPosts.length, !state.category) +
+      tab("ALL", "", allPosts.length, !state.category) +
       cats.map(([c, n]) => tab(c, c, n, activeTop === c)).join("");
     renderSubTabs();
   }
@@ -42,7 +51,7 @@
       return;
     }
     subTabsEl.innerHTML =
-      tab("전체", top, null, state.category === top) +
+      tab("ALL", top, null, state.category === top) +
       subs
         .map(([child, n]) => tab(child, `${top}/${child}`, n, state.category === `${top}/${child}`))
         .join("");
@@ -52,9 +61,9 @@
     const posts = Posts.filter(allPosts, state);
     if (!posts.length) {
       listEl.innerHTML = `
-        <div class="empty-state">
-          <p>${allPosts.length ? "조건에 맞는 글이 없어요." : "아직 작성된 글이 없어요."}</p>
-        </div>`;
+        <div class="empty-state">${
+          allPosts.length ? "조건에 맞는 글이 없습니다" : "아직 작성된 글이 없습니다"
+        }</div>`;
       return;
     }
     listEl.innerHTML = posts
@@ -63,26 +72,27 @@
       <a class="post-card" style="--cat-hue: ${Posts.catHue(p.category)}" href="/post.html?slug=${encodeURIComponent(p.slug)}">
         <div class="body">
           <div class="meta">
+            <span class="index">${Posts.num(p.index)}</span>
             <span class="category">${esc(Posts.catDisplay(p.category))}</span>
-            <span class="meta-sep">·</span>
-            <span>${Posts.formatDate(p.date)}</span>
-            ${Posts.isNew(p.date) ? `<span class="badge-new">New</span>` : ""}
+            <span class="date">${Posts.formatDate(p.date)}</span>
+            ${Posts.isNew(p.date) ? `<span class="badge-new">NEW</span>` : ""}
           </div>
-          <h2>${esc(p.title)}</h2>
-          <p class="summary">${esc(p.summary || "")}</p>
-          ${
-            (p.tags || []).length
-              ? `<div class="tags">${p.tags
-                  .map((t) => `<button class="tag-chip" data-tag="${esc(t)}">${esc(t)}</button>`)
-                  .join("")}</div>`
-              : ""
-          }
-          <span class="card-cta">글 읽기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>
+          <div class="content">
+            <h2>${esc(p.title)}</h2>
+            <p class="summary">${esc(p.summary || "")}</p>
+            ${
+              (p.tags || []).length
+                ? `<div class="tags">${p.tags
+                    .map((t) => `<button class="tag-chip" data-tag="${esc(t)}">#${esc(t)}</button>`)
+                    .join("")}</div>`
+                : ""
+            }
+          </div>
         </div>
         ${
           p.thumbnail
-            ? `<img class="thumb" src="${esc(p.thumbnail)}" alt="" loading="lazy">`
-            : `<span class="thumb thumb-empty" aria-hidden="true">${esc(Posts.topOf(p.category).slice(0, 2))}</span>`
+            ? `<img class="figure" src="${esc(p.thumbnail)}" alt="" loading="lazy">`
+            : `<span class="figure figure-empty" aria-hidden="true">NO FIG</span>`
         }
       </a>`
       )
@@ -134,12 +144,16 @@
   // ---------- 초기화 ----------
   try {
     allPosts = Posts.published(await Posts.load());
+    renderStats();
     renderTabs();
     renderList();
   } catch (err) {
-    listEl.innerHTML = `
-      <div class="empty-state">
-        <p>글 목록을 불러오지 못했어요.<br>${esc(err.message)}</p>
-      </div>`;
+    // 캐시 때문에 예전 HTML이 새 스크립트와 함께 뜨면 여기 요소들이 없을 수 있다.
+    // 그때 오류 처리까지 같이 죽으면 "불러오는 중"에서 멈춰 버리므로 ?. 로 넘긴다.
+    if (statsEl) statsEl.innerHTML = "";
+    if (listEl) {
+      listEl.innerHTML = `
+        <div class="empty-state">글 목록을 불러오지 못했습니다 · ${esc(err.message)}</div>`;
+    }
   }
 })();
