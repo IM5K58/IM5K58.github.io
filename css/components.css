@@ -10,19 +10,32 @@
   border-bottom: 1.5px solid var(--border-strong);
 }
 
-/* 왼쪽 구성선. 위아래 끝에 눈금이 있어 치수 브래킷처럼 읽힌다 */
-.hero::before {
+.hero h1 {
+  position: relative;
+}
+
+/* 제목 블록을 잡아 주는 모서리 정합 표시. 마지막에 찍힌다 */
+.hero h1::before,
+.hero h1::after {
   content: "";
   position: absolute;
-  left: calc(var(--page-pad) - 14px);
-  top: 52px;
-  bottom: 36px;
-  width: 5px;
-  border-left: 1px solid var(--border);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  transform-origin: top;
-  animation: bp-draw-y 0.5s ease-out 0.15s both;
+  width: 13px;
+  height: 13px;
+  animation: bp-mark 0.3s ease-out 1.45s both;
+}
+
+.hero h1::before {
+  top: -12px;
+  left: -12px;
+  border-top: 1.5px solid var(--rule);
+  border-left: 1.5px solid var(--rule);
+}
+
+.hero h1::after {
+  right: -12px;
+  bottom: -12px;
+  border-right: 1.5px solid var(--rule);
+  border-bottom: 1.5px solid var(--rule);
 }
 
 .hero h1 .ln {
@@ -30,56 +43,76 @@
   position: relative;
 }
 
-/* 글자를 앉힐 기준선. 글자 폭이 아니라 제목 블록 폭 끝까지 간다 —
-   제도에서 안내선은 내용보다 길게 긋는다 */
+/* 제도 레터링은 위아래 두 줄 안내선 사이에 글자를 그린다.
+   그래서 줄마다 캡선과 기준선을 함께 긋는다 — 이 한 쌍이 "설계도"로 읽히게 하는
+   핵심이다. 파선이라 실선인 본문 규칙선과 역할이 구분된다.
+   scaleX 로 늘이면 파선 간격까지 늘어나므로 clip-path 로 걷어낸다. */
+.hero h1 .ln::before,
 .hero h1 .ln::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0.14em;
-  height: 1px;
-  background: var(--border);
-  transform-origin: left;
-  animation: bp-draw-x 0.45s ease-out var(--d-guide) both;
+  height: 0;
+  border-top: 1px dashed var(--rule);
+  animation: bp-rule 0.4s ease-out var(--d-guide) both;
 }
 
-/* 글자는 기준선을 따라 좌에서 우로 채워진다 */
+.hero h1 .ln::before {
+  top: 0.16em;
+}
+
+.hero h1 .ln::after {
+  bottom: 0.16em;
+}
+
+/* 글자는 쓸려 나오지 않는다. 연필로 흐리게 앉힌 다음 잉크로 진해진다 —
+   좌우로 훑으면 타이핑으로 읽혀서 제도가 아니게 된다. */
 .hero h1 .ink {
   display: inline-block;
-  animation: bp-ink 0.5s ease-out var(--d-ink) both;
+  animation: bp-letter 0.7s ease-out var(--d-ink) both;
 }
 
 .hero h1 .ln:nth-child(1) {
-  --d-guide: 0.35s;
-  --d-ink: 0.5s;
+  --d-guide: 0.1s;
+  --d-ink: 0.55s;
 }
 
 .hero h1 .ln:nth-child(2) {
-  --d-guide: 0.65s;
-  --d-ink: 0.8s;
+  --d-guide: 0.3s;
+  --d-ink: 0.7s;
 }
 
-@keyframes bp-draw-y {
-  from {
-    transform: scaleY(0);
-  }
-}
-
-@keyframes bp-draw-x {
-  from {
-    transform: scaleX(0);
-  }
-}
-
-/* 끝 값을 명시해야 한다. 생략하면 요소의 기본값인 clip-path: none 으로 가는데,
-   inset() 과 none 사이는 보간이 안 돼서 절반 지점에서 툭 튄다. */
-@keyframes bp-ink {
+/* 파선이 왼쪽에서 오른쪽으로 걷힌다 = 자를 대고 선을 긋는 것 */
+@keyframes bp-rule {
   from {
     clip-path: inset(0 100% 0 0);
   }
   to {
     clip-path: inset(0 0 0 0);
+  }
+}
+
+/* 연필(35%) → 잠깐 머무름 → 잉크(100%) */
+@keyframes bp-letter {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.26;
+  }
+  62% {
+    opacity: 0.26;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes bp-mark {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
   }
 }
 
@@ -92,7 +125,9 @@
 /* 움직임을 원치 않는 사람에게는 다 그려진 상태로 바로 보인다.
    끝 상태가 곧 요소의 기본값이라 animation 만 끄면 된다 */
 @media (prefers-reduced-motion: reduce) {
-  .hero::before,
+  .hero h1::before,
+  .hero h1::after,
+  .hero h1 .ln::before,
   .hero h1 .ln::after,
   .hero h1 .ink,
   .hero-stats {
