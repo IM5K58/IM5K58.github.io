@@ -186,6 +186,7 @@
   --cat: oklch(45% 0.15 var(--cat-hue, 258));
   --cat-on: #ffffff;
 
+  position: relative; /* 제목 링크의 덮개 기준 */
   display: flex;
   background: var(--bg-card);
   border: 1.5px solid var(--border-strong);
@@ -197,10 +198,27 @@
   --cat-on: #12141a;
 }
 
-/* 기본은 테두리만으로 서고, 손을 올리면 밀려나며 그림자가 생긴다 */
-.post-card:hover {
+/* 기본은 테두리만으로 서고, 손을 올리면 밀려나며 그림자가 생긴다.
+   키보드로 제목 링크에 닿았을 때도 같은 상태를 보여준다 */
+.post-card:hover,
+.post-card:focus-within {
   box-shadow: var(--elevation-2);
   transform: translate(-2px, -2px);
+}
+
+/* 카드 전체를 누를 수 있게 제목 링크를 카드 크기로 덮는다.
+   링크 안에 버튼(태그 칩)을 넣으면 유효하지 않은 HTML이라 이 방법을 쓴다.
+   스크린리더에는 링크 하나로 읽히고, 그 이름은 글 제목이 된다. */
+.card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+/* 덮개 위로 올려야 눌린다 */
+.post-card .tags {
+  position: relative;
+  z-index: 1;
 }
 
 .post-card .body {

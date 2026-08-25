@@ -388,13 +388,6 @@
   --co-color: oklch(70% 0.18 20);
 }
 
-.editor-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
 /* ---------- 에디터 사용법 ---------- */
 .editor-help {
   margin: 12px auto 0;

@@ -174,12 +174,6 @@ select {
   flex: 1;
 }
 
-/* 칼럼 안 구획의 표준 좌우 여백 */
-.bleed {
-  padding-left: var(--page-pad);
-  padding-right: var(--page-pad);
-}
-
 /* ---------- 푸터 ---------- */
 .site-footer {
   max-width: var(--page-w);

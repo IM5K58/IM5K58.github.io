@@ -20,8 +20,9 @@
     return String(s ?? "").replace(/[&<>"']/g, (c) => ESC_MAP[c]);
   }
 
+  // 선택 상태를 색으로만 알리면 스크린리더에서는 어느 필터가 켜졌는지 알 수 없다
   const tab = (label, value, count, active) => `
-    <button class="tab ${active ? "active" : ""}" data-category="${esc(value)}">
+    <button class="tab ${active ? "active" : ""}" aria-pressed="${active ? "true" : "false"}" data-category="${esc(value)}">
       ${esc(label)}${count != null ? `<span class="count">${String(count).padStart(2, "0")}</span>` : ""}
     </button>`;
 
@@ -66,10 +67,13 @@
         }</div>`;
       return;
     }
+    // 카드는 <a>가 아니라 <article>이다. 태그 칩이 버튼이라, 링크 안에 버튼을
+    // 넣으면 유효하지 않은 HTML이 된다(인터랙티브 요소 중첩). 대신 제목 링크가
+    // ::after로 카드 전체를 덮어 클릭 범위를 유지하고, 태그 칩은 그 위로 올린다.
     listEl.innerHTML = posts
       .map(
-        (p) => `
-      <a class="post-card" style="--cat-hue: ${Posts.catHue(p.category)}" href="${Posts.url(p.slug)}">
+        (p, i) => `
+      <article class="post-card" style="--cat-hue: ${Posts.catHue(p.category)}">
         <div class="body">
           <div class="meta">
             <span class="index">${Posts.num(p.index)}</span>
@@ -78,7 +82,7 @@
             ${Posts.isNew(p.date) ? `<span class="badge-new">NEW</span>` : ""}
           </div>
           <div class="content">
-            <h2>${esc(p.title)}</h2>
+            <h2><a class="card-link" href="${Posts.url(p.slug)}">${esc(p.title)}</a></h2>
             <p class="summary">${esc(p.summary || "")}</p>
             ${
               (p.tags || []).length
@@ -91,10 +95,13 @@
         </div>
         ${
           p.thumbnail
-            ? `<img class="figure" src="${esc(p.thumbnail)}" alt="" loading="lazy">`
+            ? // 첫 카드 그림은 화면에 바로 보인다 — lazy를 걸면 오히려 늦게 뜬다
+              `<img class="figure" src="${esc(p.thumbnail)}" alt=""${
+                i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'
+              }>`
             : ""
         }
-      </a>`
+      </article>`
       )
       .join("");
   }
@@ -124,12 +131,12 @@
   tabsEl.addEventListener("click", onTabClick);
   subTabsEl.addEventListener("click", onTabClick);
 
+  // 태그 칩은 이제 링크 바깥에 있어서 이동을 막을 필요가 없다 (덮개 위로 올라와 있다)
   listEl.addEventListener("click", (e) => {
     const chip = /** @type {HTMLElement|null} */ (
       /** @type {Element} */ (e.target).closest("[data-tag]")
     );
     if (!chip) return;
-    e.preventDefault(); // 카드 링크 이동 막고 태그 필터 적용
     state.tag = chip.dataset.tag;
     syncTagBar();
     renderList();

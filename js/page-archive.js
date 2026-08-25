@@ -18,8 +18,9 @@
     return String(s ?? "").replace(/[&<>"']/g, (c) => ESC_MAP[c]);
   }
 
+  // 선택 상태를 색으로만 알리면 스크린리더에서는 어느 필터가 켜졌는지 알 수 없다
   const tab = (label, value, count, active) => `
-    <button class="tab ${active ? "active" : ""}" data-category="${esc(value)}">
+    <button class="tab ${active ? "active" : ""}" aria-pressed="${active ? "true" : "false"}" data-category="${esc(value)}">
       ${esc(label)}${count != null ? `<span class="count">${String(count).padStart(2, "0")}</span>` : ""}
     </button>`;
 
