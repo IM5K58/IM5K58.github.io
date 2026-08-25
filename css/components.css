@@ -1,12 +1,107 @@
 /* 목록 화면 컴포넌트: 히어로, 검색, 카테고리 필터, 글 카드, 아카이브 표 */
 
-/* ---------- 히어로 ---------- */
+/* ---------- 히어로 ----------
+   설계도를 긋는 순서로 나타난다: 구성선 → 기준선 → 글자.
+   가이드는 애니메이션이 끝나도 남는다 — 그게 제도 용지의 느낌을 만든다.
+   전부 CSS라 JS가 죽어도 글자는 보인다. */
 .hero {
+  position: relative;
   padding: 52px var(--page-pad) 36px;
   border-bottom: 1.5px solid var(--border-strong);
 }
 
-/* 글 수·카테고리 수·최근 갱신일. 색인 표지처럼 수치를 먼저 보여준다 */
+/* 왼쪽 구성선. 위아래 끝에 눈금이 있어 치수 브래킷처럼 읽힌다 */
+.hero::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--page-pad) - 14px);
+  top: 52px;
+  bottom: 36px;
+  width: 5px;
+  border-left: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transform-origin: top;
+  animation: bp-draw-y 0.5s ease-out 0.15s both;
+}
+
+.hero h1 .ln {
+  display: block;
+  position: relative;
+}
+
+/* 글자를 앉힐 기준선. 글자 폭이 아니라 제목 블록 폭 끝까지 간다 —
+   제도에서 안내선은 내용보다 길게 긋는다 */
+.hero h1 .ln::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.14em;
+  height: 1px;
+  background: var(--border);
+  transform-origin: left;
+  animation: bp-draw-x 0.45s ease-out var(--d-guide) both;
+}
+
+/* 글자는 기준선을 따라 좌에서 우로 채워진다 */
+.hero h1 .ink {
+  display: inline-block;
+  animation: bp-ink 0.5s ease-out var(--d-ink) both;
+}
+
+.hero h1 .ln:nth-child(1) {
+  --d-guide: 0.35s;
+  --d-ink: 0.5s;
+}
+
+.hero h1 .ln:nth-child(2) {
+  --d-guide: 0.65s;
+  --d-ink: 0.8s;
+}
+
+@keyframes bp-draw-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes bp-draw-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* 끝 값을 명시해야 한다. 생략하면 요소의 기본값인 clip-path: none 으로 가는데,
+   inset() 과 none 사이는 보간이 안 돼서 절반 지점에서 툭 튄다. */
+@keyframes bp-ink {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes bp-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* 움직임을 원치 않는 사람에게는 다 그려진 상태로 바로 보인다.
+   끝 상태가 곧 요소의 기본값이라 animation 만 끄면 된다 */
+@media (prefers-reduced-motion: reduce) {
+  .hero::before,
+  .hero h1 .ln::after,
+  .hero h1 .ink,
+  .hero-stats {
+    animation: none;
+  }
+}
+
+/* 글 수·카테고리 수·최근 갱신일. 색인 표지처럼 수치를 먼저 보여준다.
+   제도로 치면 표제란이라 가장 먼저 적힌다 */
 .hero-stats {
   display: flex;
   flex-wrap: wrap;
@@ -16,6 +111,7 @@
   font-size: var(--fs-micro);
   letter-spacing: 0.02em;
   color: var(--text-weak);
+  animation: bp-fade 0.4s ease-out both;
 }
 
 .hero h1 {
