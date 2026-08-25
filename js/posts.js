@@ -46,6 +46,14 @@ const Posts = (() => {
     return [...map.entries()].sort((a, b) => b[1] - a[1]);
   }
 
+  // 태그별 글 수. 많이 쓴 태그가 위, 같으면 가나다순 — 순서가 흔들리면
+  // 태그 화면에서 같은 태그를 매번 다른 자리에서 찾게 된다.
+  function tags(posts) {
+    const map = new Map();
+    posts.forEach((p) => (p.tags || []).forEach((t) => map.set(t, (map.get(t) || 0) + 1)));
+    return [...map.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ko"));
+  }
+
   // 특정 상위 카테고리의 하위 카테고리별 글 수
   function subcategories(posts, parent) {
     const map = new Map();
@@ -164,6 +172,7 @@ const Posts = (() => {
     published,
     categories,
     subcategories,
+    tags,
     topOf,
     catDisplay,
     catHue,

@@ -123,6 +123,7 @@ function buildSitemap(posts, cfg) {
     [
       entry(cfg.siteUrl + "/", day(newest), "1.0"),
       entry(cfg.siteUrl + "/archive.html", day(newest), "0.5"),
+      entry(cfg.siteUrl + "/tags.html", day(newest), "0.5"),
       ...posts.map((p) =>
         entry(`${cfg.siteUrl}/p/${encodeURIComponent(p.slug)}.html`, day(p.updated || p.date), "0.8")
       ),

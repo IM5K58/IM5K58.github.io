@@ -114,6 +114,15 @@
   color: var(--text-weak);
 }
 
+/* 태그는 태그 화면으로 가는 링크다 */
+.post-spec dd a {
+  border-bottom: 1px solid var(--rule);
+}
+
+.post-spec dd a:hover {
+  border-bottom-color: var(--text);
+}
+
 .post-spec .badge-draft {
   padding: 1px 6px;
   color: var(--danger);

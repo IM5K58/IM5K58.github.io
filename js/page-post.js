@@ -14,13 +14,15 @@
   const slug =
     new URLSearchParams(location.search).get("slug") || document.body.dataset.slug || "";
 
-  // 속성 값 안에서도 안전하도록 따옴표까지 이스케이프한다.
-  // textContent→innerHTML 방식은 " 를 그대로 흘려보내서, 제목에 따옴표가
-  // 하나만 있어도 data-*/href/src 속성이 끊기고 마크업이 깨진다.
-  const ESC_MAP = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
-  function esc(s) {
-    return String(s ?? "").replace(/[&<>"']/g, (c) => ESC_MAP[c]);
-  }
+  // ui.js 를 못 읽어도(캐시된 예전 HTML) 본문은 보여야 한다 — 이스케이프만 대신한다
+  const esc =
+    typeof UI !== "undefined"
+      ? UI.esc
+      : (v) =>
+          String(v ?? "").replace(
+            /[&<>"']/g,
+            (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]
+          );
 
   // 예전 HTML이 캐시에서 뜨면 요소가 없을 수 있다 — 오류 처리까지 죽지 않게 한다
   function fail(msg) {
@@ -86,7 +88,15 @@
       specRow("WRITTEN", Posts.formatDateTime(meta.date) || "—") +
       (edited ? specRow("UPDATED", Posts.formatDateTime(meta.updated)) : "") +
       ((meta.tags || []).length
-        ? specRow("TAGS", meta.tags.map((t) => `#${esc(t)}`).join("&nbsp; "))
+        ? specRow(
+            "TAGS",
+            meta.tags
+              .map(
+                (t) =>
+                  `<a href="/tags.html?tag=${encodeURIComponent(t)}">#${esc(t)}</a>`
+              )
+              .join("&nbsp; ")
+          )
         : "") +
       (meta.source
         ? specRow(

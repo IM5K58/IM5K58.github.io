@@ -142,6 +142,14 @@
   border-color: var(--bg-inverse);
 }
 
+/* 태그 화면의 태그 목록. 개수가 많아지면 가로로 흐르지 않고 접혀 내려간다 —
+   태그는 훑어보는 대상이라 가로 스크롤 뒤에 숨으면 안 된다. */
+.tag-cloud {
+  flex-wrap: wrap;
+  overflow-x: visible;
+  gap: 6px;
+}
+
 /* ---------- 활성 태그 필터 표시 ---------- */
 .active-tag-bar {
   display: none;
@@ -157,8 +165,14 @@
   display: flex;
 }
 
-.active-tag-bar b {
+/* 태그 이름을 누르면 그 태그의 전체 목록(태그 화면)으로 넘어간다 */
+.active-tag-bar a#active-tag-name {
   color: var(--text);
+  border-bottom: 1px solid var(--rule);
+}
+
+.active-tag-bar a#active-tag-name:hover {
+  border-bottom-color: var(--text);
 }
 
 .active-tag-bar .clear {

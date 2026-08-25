@@ -5,7 +5,8 @@
   <meta http-equiv="Content-Security-Policy"
         content="script-src 'self' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>페이지를 찾을 수 없습니다 — Kyumswriting</title>
+  <title>태그 — Kyumswriting</title>
+  <meta name="description" content="태그로 글 찾기">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" integrity="sha384-GIdEBaqGN9mNkDkMkzMHW8EKUqtpPIe/sLj1X7DIrnc9uPtLROJgmuDlh+3rBw0j" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5.3.0/latin.css" integrity="sha384-GDuWkQ2vJ3WLB+Pwjr2vmR7AG/si+whIv67zaJbePaDliRT2+WESPt1RYPPu5/4P" crossorigin="anonymous">
@@ -13,7 +14,6 @@
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/components.css">
   <script src="/js/theme.js"></script>
-  <script src="/js/page-404.js"></script>
 </head>
 <body class="grid-bg">
   <header class="site-header">
@@ -22,7 +22,7 @@
       <nav class="header-actions">
         <a class="nav-link" href="/">index</a>
         <a class="nav-link" href="/archive.html">archive</a>
-        <a class="nav-link" href="/tags.html">tags</a>
+        <a class="nav-link active" href="/tags.html">tags</a>
         <a class="nav-link" href="/admin.html">write</a>
         <button class="theme-btn" id="theme-toggle" title="테마 전환" aria-label="테마 전환">
           <span class="to-dark">DARK</span><span class="to-light">LIGHT</span>
@@ -33,20 +33,30 @@
 
   <main class="container">
     <section class="page-head">
-      <p class="eyebrow">ERROR 404</p>
+      <p class="eyebrow">TAGS</p>
       <div class="row">
-        <h1>페이지를 찾을 수 없습니다</h1>
+        <h1>태그로 찾기</h1>
+        <p class="page-sub" id="tag-count">—</p>
       </div>
     </section>
-    <div class="tab-bar" style="padding-top: 28px">
-      <p style="font-size: 15px; color: var(--text-sub)">주소가 바뀌었거나 삭제된 글일 수 있습니다.</p>
-      <div style="margin-top: 6px"><a class="btn btn-primary" href="/">색인으로 돌아가기</a></div>
+
+    <div class="tab-bar">
+      <nav class="category-tabs tag-cloud" id="tag-cloud" aria-label="태그"></nav>
     </div>
+
+    <section id="tag-body">
+      <div class="empty-state">불러오는 중</div>
+    </section>
   </main>
 
   <footer class="site-footer">
     <span>© 2026 IM5K58</span>
     <a href="https://pages.github.com" target="_blank" rel="noopener">GITHUB PAGES</a>
   </footer>
+
+  <script src="/js/config.js"></script>
+  <script src="/js/posts.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/page-tags.js"></script>
 </body>
 </html>
