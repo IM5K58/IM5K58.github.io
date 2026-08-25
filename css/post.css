@@ -20,7 +20,7 @@
 .post-crumb {
   padding-top: 44px;
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: var(--fs-meta);
   color: var(--text-weak);
   text-transform: lowercase;
 }
@@ -56,7 +56,7 @@
   gap: 10px;
   margin-bottom: 18px;
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: var(--fs-meta);
 }
 
 .post-head .index {
@@ -70,7 +70,7 @@
 }
 
 .post-head h1 {
-  font-size: 34px;
+  font-size: var(--fs-2xl);
   font-weight: 700;
   line-height: 1.3;
   letter-spacing: -0.035em;
@@ -85,7 +85,7 @@
   background: var(--bg-card);
   border: 1.5px solid var(--border-strong);
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: var(--fs-meta);
 }
 
 .post-spec .spec-row {
@@ -132,7 +132,7 @@
 /* ---------- 본문 ---------- */
 .prose {
   counter-reset: sec fig eq;
-  font-size: 16px;
+  font-size: var(--fs-base);
   line-height: 1.88;
   color: var(--text);
   word-break: keep-all;
@@ -153,15 +153,15 @@
 }
 
 .prose h1 {
-  font-size: 27px;
+  font-size: var(--fs-xl);
 }
 
 .prose h3 {
-  font-size: 18.5px;
+  font-size: var(--fs-lg);
 }
 
 .prose h4 {
-  font-size: 16.5px;
+  font-size: var(--fs-base);
   color: var(--text-sub);
 }
 
@@ -173,7 +173,7 @@
   align-items: baseline;
   gap: 12px;
   margin-top: 44px;
-  font-size: 23px;
+  font-size: var(--fs-xl);
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.4;
@@ -184,7 +184,7 @@
   content: counter(sec, decimal-leading-zero);
   flex: none;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--fs-nav);
   font-weight: 400;
   letter-spacing: 0;
   color: var(--primary);
@@ -259,7 +259,7 @@
   padding: 9px 0;
   border-bottom: 1px solid var(--rule);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--fs-micro);
   line-height: 1.6;
   color: var(--text-weak);
 }
@@ -326,7 +326,7 @@
   content: "(" counter(eq) ")";
   flex: none;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-meta);
   color: var(--text-weak);
 }
 
@@ -352,7 +352,7 @@
   display: block;
   margin-bottom: 7px;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.12em;
   color: var(--co-color);
 }
@@ -467,7 +467,7 @@
 /* ---------- 코드 ---------- */
 .prose code:not(pre code) {
   padding: 1px 5px;
-  font-family: var(--font-mono);
+  font-family: var(--font-code);
   font-size: 0.87em;
   color: var(--text);
   background: var(--bg-elevated);
@@ -484,7 +484,7 @@
   justify-content: flex-end;
   padding: 7px 12px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.06em;
   color: var(--text-weak);
   background: var(--bg-elevated);
@@ -504,8 +504,8 @@
 }
 
 .prose pre code {
-  font-family: var(--font-mono);
-  font-size: 13px;
+  font-family: var(--font-code);
+  font-size: var(--fs-nav);
   color: inherit;
   background: transparent;
   border: none;
@@ -526,7 +526,7 @@
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14.5px;
+  font-size: var(--fs-sm);
   background: var(--bg-card);
 }
 
@@ -549,7 +549,7 @@
 
 .prose th {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--fs-micro);
   font-weight: 400;
   color: var(--text-weak);
   background: var(--bg-elevated);
@@ -584,13 +584,13 @@
   display: block;
   margin-bottom: 6px;
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: var(--fs-micro);
   color: var(--text-weak);
 }
 
 .post-nav .name {
   display: block;
-  font-size: 15px;
+  font-size: var(--fs-base);
   font-weight: 600;
   letter-spacing: -0.02em;
   overflow: hidden;
@@ -612,7 +612,7 @@
 .post-loading {
   padding: 100px var(--page-pad);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--fs-meta);
   color: var(--text-weak);
 }
 
@@ -624,14 +624,6 @@
 @media (max-width: 720px) {
   .post-crumb {
     padding-top: 32px;
-  }
-
-  .post-head h1 {
-    font-size: 26px;
-  }
-
-  .prose {
-    font-size: 15.5px;
   }
 
   .post-spec .spec-row {
