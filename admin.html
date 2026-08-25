@@ -26,7 +26,7 @@
         <a class="nav-link" href="/archive.html">archive</a>
         <a class="nav-link" href="/tags.html">tags</a>
         <a class="nav-link active" href="/admin.html">write</a>
-        <button class="theme-btn" id="theme-toggle" title="테마 전환" aria-label="테마 전환">
+        <button class="theme-btn" id="theme-toggle" data-theme-toggle title="테마 전환" aria-label="테마 전환">
           <span class="to-dark">DARK</span><span class="to-light">LIGHT</span>
         </button>
       </nav>
@@ -153,6 +153,15 @@
       </details>
     </section>
   </main>
+
+  <!-- 좁은 화면에서는 헤더 토글이 숨으므로, 관리 화면에도 내려앉을 자리가 필요하다 -->
+  <footer class="site-footer">
+    <span>© 2026 IM5K58</span>
+    <button class="theme-btn footer-theme" data-theme-toggle title="테마 전환" aria-label="테마 전환">
+      <span class="to-dark">DARK</span><span class="to-light">LIGHT</span>
+    </button>
+    <a href="/">← 블로그로</a>
+  </footer>
 
   <script src="/js/config.js"></script>
   <script src="/js/posts.js"></script>

@@ -164,6 +164,21 @@ select {
   display: none;
 }
 
+/* 좁은 화면에서 헤더로 안 들어가는 몫. 평소엔 숨어 있다가 아래 미디어 쿼리에서
+   헤더 버튼과 자리를 바꾼다. 푸터는 어두운 바가 아니라 종이 위라 색을 다시 준다.
+   테두리를 글자와 같은 색으로 두는 건 --rule(#949591)이 종이 위에서 2.81:1 밖에
+   안 나오기 때문이다 — 흰 카드 위(3.01:1)를 기준으로 고른 값이라 여기선 모자란다. */
+.footer-theme {
+  display: none;
+  color: var(--text-weak);
+  border-color: var(--text-weak);
+}
+
+.footer-theme:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
 /* ---------- 문서 칼럼 ----------
    좌우 여백은 컨테이너가 아니라 안쪽 구획이 갖는다. 구획의 규칙선이
    칼럼 폭 끝까지 닿아야 문서처럼 보이기 때문이다. */
@@ -210,5 +225,35 @@ select {
 
   .site-logo {
     font-size: 13px;
+  }
+}
+
+/* 로고(125px) + 메뉴 4개(142px + 간격)만으로 이미 헤더가 꽉 찬다.
+   여기에 테마 버튼(45px)까지 넣으면 375px 화면에서 문서가 404px이 된다.
+   버튼을 없애는 대신 푸터로 내린다 — 폰에서도 테마는 바꿀 수 있어야 한다. */
+@media (max-width: 480px) {
+  .site-header .theme-btn {
+    display: none;
+  }
+
+  .footer-theme {
+    display: inline-block;
+  }
+}
+
+/* 버튼을 내려도 320px에서는 45px이 모자란다(필요 325 / 가용 280).
+   접미사 31px + 간격 18px = 49px을 줄여 맞춘다.
+   360px(안드로이드 다수)도 5px 모자라므로 경계는 400px에 둔다. */
+@media (max-width: 400px) {
+  .site-logo .suffix {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 10px;
+  }
+
+  .site-header .inner {
+    gap: 10px;
   }
 }

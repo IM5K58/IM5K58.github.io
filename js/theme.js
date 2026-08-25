@@ -42,10 +42,13 @@ const Theme = {
     );
   },
 
-  // 헤더의 토글 버튼 연결 (모든 페이지 공통)
+  // 토글 버튼 연결. 좁은 화면에서는 헤더가 꽉 차서 버튼이 푸터로 내려가므로
+  // 페이지에 두 개가 있고 CSS가 하나씩만 보여준다 — 둘 다 연결한다.
+  // #theme-toggle 도 함께 잡는 건 캐시된 예전 HTML에는 속성이 없기 때문이다.
   bindToggle() {
-    const btn = document.getElementById("theme-toggle");
-    if (btn) btn.addEventListener("click", () => this.toggle());
+    document
+      .querySelectorAll("#theme-toggle, [data-theme-toggle]")
+      .forEach((btn) => btn.addEventListener("click", () => this.toggle()));
   },
 };
 
