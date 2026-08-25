@@ -122,12 +122,25 @@
     renderList();
   });
 
+  // 치수선 값은 재서 넣는다 — 제목 블록 폭이 화면마다 달라서 고정 숫자는 거짓말이 된다.
+  // 목록을 그리기 전에 재면 안 된다: 목록이 들어오며 스크롤바가 생기면 폭이
+  // 15px쯤 줄어서 라벨만 옛 값으로 남는다. 그래서 renderList() 뒤에 부른다.
+  // 못 넣어도 선은 그대로 그려지고 라벨만 빠진다(:empty 로 숨는다).
+  const dimEl = document.querySelector(".bp-dim-val");
+  const titleEl = document.querySelector(".hero h1");
+  function setDim() {
+    if (!dimEl || !titleEl) return;
+    dimEl.textContent = String(Math.round(titleEl.getBoundingClientRect().width));
+  }
+  window.addEventListener("resize", setDim, { passive: true });
+
   // ---------- 초기화 ----------
   try {
     allPosts = Posts.published(await Posts.load());
     renderStats();
     UI.renderCategoryTabs(tabsEl, subTabsEl, allPosts, state.category);
     renderList();
+    setDim(); // 목록이 들어와 스크롤바가 생긴 뒤의 폭을 잰다
   } catch (err) {
     // 캐시 때문에 예전 HTML이 새 스크립트와 함께 뜨면 여기 요소들이 없을 수 있다.
     // 그때 오류 처리까지 같이 죽으면 "불러오는 중"에서 멈춰 버린다.
