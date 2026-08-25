@@ -69,7 +69,7 @@
     listEl.innerHTML = posts
       .map(
         (p) => `
-      <a class="post-card" style="--cat-hue: ${Posts.catHue(p.category)}" href="/post.html?slug=${encodeURIComponent(p.slug)}">
+      <a class="post-card" style="--cat-hue: ${Posts.catHue(p.category)}" href="${Posts.url(p.slug)}">
         <div class="body">
           <div class="meta">
             <span class="index">${Posts.num(p.index)}</span>

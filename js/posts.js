@@ -131,6 +131,14 @@ const Posts = (() => {
     return String(i).padStart(3, "0");
   }
 
+  // 글 주소. post.html?slug= 대신 글마다 따로 만들어 둔 껍데기를 가리킨다 —
+  // 카톡·슬랙 같은 미리보기 크롤러는 JS를 돌리지 않아서, 한 파일로는 모든 글이
+  // 같은 제목으로 보인다. 껍데기는 tools/build-meta 가 만든다.
+  // 아직 안 만들어졌으면 404.html이 post.html?slug= 로 되돌려 준다.
+  function url(slug) {
+    return `/p/${encodeURIComponent(slug)}.html`;
+  }
+
   // 히어로에 얹는 수치. 색인 표지처럼 규모를 먼저 보여준다.
   function stats(posts) {
     const latest = posts.reduce((acc, p) => {
@@ -164,6 +172,7 @@ const Posts = (() => {
     formatDate,
     formatDateTime,
     num,
+    url,
     stats,
     neighbors,
   };

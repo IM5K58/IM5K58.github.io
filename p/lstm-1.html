@@ -5,10 +5,26 @@
   <meta http-equiv="Content-Security-Policy"
         content="script-src 'self' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kyumswriting</title>
+  <title>LSTM (1) — Kyumswriting</title>
   <!-- 아래 두 표시 사이는 tools/build-meta/generate.mjs 가 글마다 채워 넣는다.
        이 파일 자체(post.html?slug=)는 비워 둔 채로 계속 동작한다. -->
-  <!-- meta:start --><!-- meta:end -->
+  <!-- meta:start -->
+  <meta name="description" content="LSTM 1편">
+  <link rel="canonical" href="https://im5k58.github.io/p/lstm-1.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Kyumswriting">
+  <meta property="og:title" content="LSTM (1)">
+  <meta property="og:description" content="LSTM 1편">
+  <meta property="og:url" content="https://im5k58.github.io/p/lstm-1.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="article:published_time" content="2026-08-14T13:54:00+09:00">
+  <meta property="article:modified_time" content="2026-08-14T14:36:00+09:00">
+  <meta property="article:section" content="AI/DeepLearning">
+  <meta property="article:tag" content="LSTM">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="LSTM (1)">
+  <meta name="twitter:description" content="LSTM 1편">
+  <!-- meta:end -->
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" integrity="sha384-GIdEBaqGN9mNkDkMkzMHW8EKUqtpPIe/sLj1X7DIrnc9uPtLROJgmuDlh+3rBw0j" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5.3.0/latin.css" integrity="sha384-GDuWkQ2vJ3WLB+Pwjr2vmR7AG/si+whIv67zaJbePaDliRT2+WESPt1RYPPu5/4P" crossorigin="anonymous">
@@ -19,7 +35,7 @@
   <link rel="stylesheet" href="/css/post.css">
   <script src="/js/theme.js"></script>
 </head>
-<body>
+<body data-slug="lstm-1">
   <header class="site-header">
     <div class="inner">
       <a class="site-logo" href="/">kyumswriting<span class="suffix">.log</span></a>

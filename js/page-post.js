@@ -8,7 +8,11 @@
   const bodyEl = document.getElementById("post-body");
   const loadingEl = document.getElementById("post-loading");
 
-  const slug = new URLSearchParams(location.search).get("slug");
+  // 두 경로로 들어온다: 생성된 껍데기(/p/<slug>.html, body[data-slug])와
+  // 예전 주소(post.html?slug=). 껍데기가 아직 없을 때 404가 되돌려 보내는 곳이라
+  // 쿼리 방식도 계속 살려 둔다.
+  const slug =
+    new URLSearchParams(location.search).get("slug") || document.body.dataset.slug || "";
 
   // 속성 값 안에서도 안전하도록 따옴표까지 이스케이프한다.
   // textContent→innerHTML 방식은 " 를 그대로 흘려보내서, 제목에 따옴표가
@@ -99,7 +103,7 @@
     // 색인 순서상의 앞/뒤 글. 한쪽이 없으면 빈 칸을 둬서 좌우가 헷갈리지 않게 한다.
     const navCard = (p, dir, label) =>
       p
-        ? `<a class="${dir}" href="/post.html?slug=${encodeURIComponent(p.slug)}">
+        ? `<a class="${dir}" href="${Posts.url(p.slug)}">
              <span class="dir">${label}</span>
              <span class="name">${esc(p.title)}</span>
            </a>`

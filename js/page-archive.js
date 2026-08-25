@@ -82,7 +82,7 @@
             .map(
               (p) => `
             <li>
-              <a class="archive-row" style="--cat-hue: ${Posts.catHue(p.category)}" href="/post.html?slug=${encodeURIComponent(p.slug)}">
+              <a class="archive-row" style="--cat-hue: ${Posts.catHue(p.category)}" href="${Posts.url(p.slug)}">
                 <span class="archive-index">${Posts.num(p.index)}</span>
                 <span class="archive-date">${monthDay(p.date)}</span>
                 <span class="archive-title">${esc(p.title)}</span>

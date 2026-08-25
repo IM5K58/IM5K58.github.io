@@ -1,0 +1,61 @@
+name: 미리보기 메타 생성
+
+# 글 목록이 바뀌면 글마다 미리보기 껍데기(p/*.html) + sitemap.xml 을 다시 만든다.
+# 글을 쓰는 경로가 둘(관리 화면·노션 동기화)이라, 양쪽에 같은 코드를 넣는 대신
+# 커밋을 지켜보다가 한 곳에서 처리한다.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "posts/index.json" # 글이 추가·수정·삭제됨
+      - "post.html" # 껍데기의 원본이 바뀜
+      - "js/config.js" # 사이트 주소·제목이 바뀜
+      - "tools/build-meta/**"
+  workflow_dispatch: # 전체 다시 만들기 (Actions 탭에서 수동 실행)
+
+# 이 잡이 만드는 파일(p/**, sitemap.xml, robots.txt)은 위 paths 에 없다.
+# 그래서 자기 커밋으로 자기가 다시 도는 일은 생기지 않는다.
+
+concurrency:
+  group: build-meta
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 아래 rebase 재시도를 위해 전체 히스토리 필요
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          # 의존성이 없는 스크립트라 npm install 도 캐시도 필요 없다
+
+      - name: 껍데기 · 사이트맵 생성
+        run: node tools/build-meta/generate.mjs
+
+      - name: 변경분 커밋
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "변경 없음 — 커밋 생략"
+            exit 0
+          fi
+          git commit -m "meta: 미리보기 껍데기 갱신"
+          # 관리 화면·노션 동기화가 동시에 커밋했을 수 있으므로 재시도
+          for i in 1 2 3; do
+            # 앞 회차가 충돌로 rebase 진행 중 상태를 남기면 다음 회차가
+            # "already in progress"로 즉사해 재시도 루프가 무력해진다
+            git rebase --abort 2>/dev/null || true
+            git pull --rebase origin main && git push origin main && exit 0
+            echo "push 재시도 $i"
+            sleep 5
+          done
+          exit 1

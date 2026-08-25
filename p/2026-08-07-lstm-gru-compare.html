@@ -5,10 +5,29 @@
   <meta http-equiv="Content-Security-Policy"
         content="script-src 'self' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kyumswriting</title>
+  <title>LSTM vs. GRU — Kyumswriting</title>
   <!-- 아래 두 표시 사이는 tools/build-meta/generate.mjs 가 글마다 채워 넣는다.
        이 파일 자체(post.html?slug=)는 비워 둔 채로 계속 동작한다. -->
-  <!-- meta:start --><!-- meta:end -->
+  <!-- meta:start -->
+  <meta name="description" content="LSTM과 GRU를 한번에 비교한다.">
+  <link rel="canonical" href="https://im5k58.github.io/p/2026-08-07-lstm-gru-compare.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Kyumswriting">
+  <meta property="og:title" content="LSTM vs. GRU">
+  <meta property="og:description" content="LSTM과 GRU를 한번에 비교한다.">
+  <meta property="og:url" content="https://im5k58.github.io/p/2026-08-07-lstm-gru-compare.html">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:image" content="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPPsRQMO49qzWbz68FMcvE5akG7EbG4TB8MrQ1EDSxxA&amp;s=10">
+  <meta property="article:published_time" content="2026-08-07T11:02:49+09:00">
+  <meta property="article:modified_time" content="2026-08-07T11:02:49+09:00">
+  <meta property="article:section" content="AI/DeepLearning">
+  <meta property="article:tag" content="LSTM">
+  <meta property="article:tag" content="GRU">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="LSTM vs. GRU">
+  <meta name="twitter:description" content="LSTM과 GRU를 한번에 비교한다.">
+  <meta name="twitter:image" content="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPPsRQMO49qzWbz68FMcvE5akG7EbG4TB8MrQ1EDSxxA&amp;s=10">
+  <!-- meta:end -->
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" integrity="sha384-GIdEBaqGN9mNkDkMkzMHW8EKUqtpPIe/sLj1X7DIrnc9uPtLROJgmuDlh+3rBw0j" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5.3.0/latin.css" integrity="sha384-GDuWkQ2vJ3WLB+Pwjr2vmR7AG/si+whIv67zaJbePaDliRT2+WESPt1RYPPu5/4P" crossorigin="anonymous">
@@ -19,7 +38,7 @@
   <link rel="stylesheet" href="/css/post.css">
   <script src="/js/theme.js"></script>
 </head>
-<body>
+<body data-slug="2026-08-07-lstm-gru-compare">
   <header class="site-header">
     <div class="inner">
       <a class="site-logo" href="/">kyumswriting<span class="suffix">.log</span></a>
