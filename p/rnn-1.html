@@ -40,7 +40,12 @@
 <body data-slug="rnn-1">
   <header class="site-header">
     <div class="inner">
-      <a class="site-logo" href="/">kyumswriting<span class="suffix">.log</span></a>
+      <div class="left">
+        <button class="menu-btn" id="menu-btn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="drawer">
+          <span></span><span></span><span></span>
+        </button>
+        <a class="site-logo" href="/">kyumswriting<span class="suffix">.log</span></a>
+      </div>
       <nav class="header-actions">
         <a class="nav-link" href="/">index</a>
         <a class="nav-link" href="/archive.html">archive</a>
@@ -69,9 +74,6 @@
 
   <footer class="site-footer">
     <span>© 2026 IM5K58</span>
-    <button class="theme-btn footer-theme" data-theme-toggle title="테마 전환" aria-label="테마 전환">
-      <span class="to-dark">DARK</span><span class="to-light">LIGHT</span>
-    </button>
     <a href="https://pages.github.com" target="_blank" rel="noopener">GITHUB PAGES</a>
   </footer>
 
@@ -83,5 +85,6 @@
   <script src="/js/ui.js"></script>
   <script src="/js/render.js"></script>
   <script src="/js/page-post.js"></script>
+  <script src="/js/menu.js"></script>
 </body>
 </html>

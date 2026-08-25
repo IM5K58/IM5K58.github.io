@@ -20,7 +20,12 @@
 <body>
   <header class="site-header">
     <div class="inner">
-      <a class="site-logo" href="/">kyumswriting<span class="suffix">.log</span></a>
+      <div class="left">
+        <button class="menu-btn" id="menu-btn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="drawer">
+          <span></span><span></span><span></span>
+        </button>
+        <a class="site-logo" href="/">kyumswriting<span class="suffix">.log</span></a>
+      </div>
       <nav class="header-actions">
         <a class="nav-link" href="/">index</a>
         <a class="nav-link" href="/archive.html">archive</a>
@@ -157,9 +162,6 @@
   <!-- 좁은 화면에서는 헤더 토글이 숨으므로, 관리 화면에도 내려앉을 자리가 필요하다 -->
   <footer class="site-footer">
     <span>© 2026 IM5K58</span>
-    <button class="theme-btn footer-theme" data-theme-toggle title="테마 전환" aria-label="테마 전환">
-      <span class="to-dark">DARK</span><span class="to-light">LIGHT</span>
-    </button>
     <a href="/">← 블로그로</a>
   </footer>
 
@@ -168,5 +170,6 @@
   <script src="/js/render.js"></script>
   <script src="/js/github-api.js"></script>
   <script src="/js/admin.js"></script>
+  <script src="/js/menu.js"></script>
 </body>
 </html>
