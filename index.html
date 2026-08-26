@@ -44,13 +44,15 @@
       <div class="hero-stats" id="hero-stats">
         <span>ENTRIES —</span><span>CATEGORIES —</span><span>UPDATED —</span>
       </div>
-      <!-- 줄마다 기준선을 긋고 그 위에 글자를 채우는 순서로 나타난다 (css/components.css) -->
-      <h1>
-        <span class="ln"><span class="ink">공부한 것들을</span></span>
-        <span class="ln"><span class="ink">기록하고 정리합니다</span></span>
-      </h1>
-      <!-- 치수선. 값은 page-index.js 가 실제로 재서 넣는다 (화면 폭마다 다르다) -->
-      <div class="bp-dim" aria-hidden="true"><span class="bp-dim-val"></span></div>
+      <!-- 글자마다 윤곽선이 그어졌다 채워진다 (js/hero-draw.js).
+           SVG 는 h1 안이 아니라 이 래퍼에 들어간다 — h1 안에 넣으면
+           제목의 접근성 이름에 글자가 두 번씩 섞여 들어간다. -->
+      <div class="hero-title">
+        <h1>
+          <span class="ln">공부한 것들을</span>
+          <span class="ln">기록하고 정리합니다</span>
+        </h1>
+      </div>
     </section>
 
     <div class="filter-bar">
@@ -81,6 +83,7 @@
   <script src="/js/posts.js"></script>
   <script src="/js/ui.js"></script>
   <script src="/js/page-index.js"></script>
+  <script src="/js/hero-draw.js"></script>
   <script src="/js/menu.js"></script>
 </body>
 </html>
