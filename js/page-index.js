@@ -41,17 +41,19 @@
     // 카드는 <a>가 아니라 <article>이다. 태그 칩이 버튼이라, 링크 안에 버튼을
     // 넣으면 유효하지 않은 HTML이 된다(인터랙티브 요소 중첩). 대신 제목 링크가
     // ::after로 카드 전체를 덮어 클릭 범위를 유지하고, 태그 칩은 그 위로 올린다.
+    //
+    // 메타 줄은 본문이 아니라 카드 전체 폭에 걸친다. 본문 안에 두면 썸네일이
+    // 있는 카드에서만 줄이 짧아져 NEW 가 카드마다 다른 자리에 놓인다.
     listEl.innerHTML = posts
       .map(
         (p, i) => `
       <article class="post-card" style="--cat-hue: ${Posts.catHue(p.category)}">
-        <div class="body">
-          <div class="meta">
-            <span class="index">${Posts.num(p.index)}</span>
-            <span class="category">${esc(Posts.catDisplay(p.category))}</span>
-            <span class="date">${Posts.formatDate(p.date)}</span>
-            ${Posts.isNew(p.date) ? `<span class="badge-new">NEW</span>` : ""}
-          </div>
+        <div class="meta">
+          <span class="category">${esc(Posts.catDisplay(p.category))}</span>
+          <span class="date">${Posts.formatDate(p.date)}</span>
+          ${Posts.isNew(p.date) ? `<span class="badge-new">NEW</span>` : ""}
+        </div>
+        <div class="row">
           <div class="content">
             <h2><a class="card-link" href="${Posts.url(p.slug)}">${esc(p.title)}</a></h2>
             <p class="summary">${esc(p.summary || "")}</p>
@@ -63,15 +65,15 @@
                 : ""
             }
           </div>
+          ${
+            p.thumbnail
+              ? // 첫 카드 그림은 화면에 바로 보인다 — lazy를 걸면 오히려 늦게 뜬다
+                `<img class="figure" src="${esc(p.thumbnail)}" alt=""${
+                  i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'
+                }>`
+              : ""
+          }
         </div>
-        ${
-          p.thumbnail
-            ? // 첫 카드 그림은 화면에 바로 보인다 — lazy를 걸면 오히려 늦게 뜬다
-              `<img class="figure" src="${esc(p.thumbnail)}" alt=""${
-                i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'
-              }>`
-            : ""
-        }
       </article>`
       )
       .join("");

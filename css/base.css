@@ -26,14 +26,6 @@ body {
   flex-direction: column;
 }
 
-/* 배경 격자는 목록 화면에만 깐다. 글 상세는 본문에 이미지와 수식이 들어가서
-   배경이 조용해야 읽힌다 — 그래서 body 클래스로 켜고 끈다. */
-body.grid-bg {
-  background-image: linear-gradient(var(--gridline) 1px, transparent 1px),
-    linear-gradient(90deg, var(--gridline) 1px, transparent 1px);
-  background-size: var(--grid-size) var(--grid-size);
-}
-
 a {
   color: inherit;
   text-decoration: none;

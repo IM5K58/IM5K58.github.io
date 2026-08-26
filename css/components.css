@@ -127,15 +127,19 @@
   box-shadow: var(--elevation-2);
 }
 
-.search-label {
+.search-icon {
   flex: none;
-  padding: 11px 12px;
-  font-family: var(--font-mono);
-  font-size: var(--fs-meta);
+  display: flex;
+  align-items: center;
+  padding: 0 11px;
   color: var(--text-weak);
   background: var(--bg-elevated);
   border-right: 1.5px solid var(--border-strong);
-  user-select: none;
+}
+
+.search-icon svg {
+  width: 17px;
+  height: 17px;
 }
 
 .search-input {
@@ -282,6 +286,7 @@
 
   position: relative; /* 제목 링크의 덮개 기준 */
   display: flex;
+  flex-direction: column; /* 메타 줄 → 본문+썸네일 */
   background: var(--bg-card);
   border: 1.5px solid var(--border-strong);
   transition: box-shadow 0.16s ease, transform 0.16s ease;
@@ -315,11 +320,18 @@
   z-index: 1;
 }
 
-.post-card .body {
+/* 본문과 썸네일이 나란히 서는 줄 */
+.post-card .row {
+  display: flex;
+  min-width: 0;
+}
+
+.post-card .content {
   flex: 1;
   min-width: 0;
 }
 
+/* 카드 전체 폭에 걸친다 — 그래야 NEW 가 언제나 카드 오른쪽 끝에 선다 */
 .post-card .meta {
   display: flex;
   align-items: center;
@@ -328,10 +340,6 @@
   font-family: var(--font-mono);
   font-size: var(--fs-meta);
   border-bottom: 1.5px solid var(--border-strong);
-}
-
-.post-card .meta .index {
-  color: var(--text-weak);
 }
 
 .post-card .meta .category {
@@ -389,7 +397,7 @@
 /* 오른쪽 도판 칸. 그림이 있는 카드에만 붙고, 없으면 본문이 카드 폭을 다 쓴다 */
 .post-card .figure {
   flex: none;
-  width: 150px;
+  width: 200px;
   align-self: stretch;
   height: auto;
   object-fit: cover;
