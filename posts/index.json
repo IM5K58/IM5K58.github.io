@@ -14,6 +14,63 @@
   ],
   "posts": [
     {
+      "slug": "study-with-oh-2",
+      "title": "OH 딥러닝 스터디 기록 (2)",
+      "date": "2026-08-28T09:52:00+09:00",
+      "updated": "2026-08-28T09:53:00+09:00",
+      "category": "Study/AI",
+      "tags": [
+        "Study",
+        "DeepLearning"
+      ],
+      "summary": "오승상 교수님 딥러닝 강의 스터디 기록 2",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4FO8VtFsoZDG_xSTyDNMrcMeWxqkg4726RyjRVxhtlA&s=10",
+      "draft": false,
+      "source": "notion",
+      "notionId": "3caf9dfb-8099-80d4-9dfc-c12e7e4db12f",
+      "notionUrl": "https://app.notion.com/p/OH-2-3caf9dfb809980d49dfcc12e7e4db12f",
+      "notionEdited": "2026-08-28T00:53:00.000Z",
+      "syncVersion": 2
+    },
+    {
+      "slug": "study-with-oh-3",
+      "title": "OH 딥러닝 스터디 기록 (3)",
+      "date": "2026-08-28T09:52:00+09:00",
+      "updated": "2026-08-28T09:53:00+09:00",
+      "category": "Study/AI",
+      "tags": [
+        "Study",
+        "DeepLearning"
+      ],
+      "summary": "오승상 교수님 딥러닝 강의 스터디 기록 3",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4FO8VtFsoZDG_xSTyDNMrcMeWxqkg4726RyjRVxhtlA&s=10",
+      "draft": false,
+      "source": "notion",
+      "notionId": "3caf9dfb-8099-8000-baee-eb921a35c6b5",
+      "notionUrl": "https://app.notion.com/p/OH-3-3caf9dfb80998000baeeeb921a35c6b5",
+      "notionEdited": "2026-08-28T00:53:00.000Z",
+      "syncVersion": 2
+    },
+    {
+      "slug": "study-with-oh-4",
+      "title": "OH 딥러닝 스터디 기록 (4)",
+      "date": "2026-08-28T09:52:00+09:00",
+      "updated": "2026-08-28T09:53:00+09:00",
+      "category": "Study/AI",
+      "tags": [
+        "Study",
+        "DeepLearning"
+      ],
+      "summary": "오승상 교수님 딥러닝 강의 스터디 기록 4",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4FO8VtFsoZDG_xSTyDNMrcMeWxqkg4726RyjRVxhtlA&s=10",
+      "draft": false,
+      "source": "notion",
+      "notionId": "3caf9dfb-8099-804b-a88c-fed1ea6b184d",
+      "notionUrl": "https://app.notion.com/p/OH-4-3caf9dfb8099804ba88cfed1ea6b184d",
+      "notionEdited": "2026-08-28T00:53:00.000Z",
+      "syncVersion": 2
+    },
+    {
       "slug": "study-with-oh-1",
       "title": "OH 딥러닝 스터디 기록 (1)",
       "date": "2026-08-28T09:39:00+09:00",
