@@ -1,17 +1,20 @@
 ---
-title: "카오스 이론 + 프랙탈 이론"
+title: "카오스/프랙탈 이론 정리"
 date: 2026-08-11T09:52:00+09:00
-updated: 2026-08-28T09:35:00+09:00
+updated: 2026-08-28T09:48:00+09:00
 category: Theory
 tags: [Chaos, Fractal]
 summary: "카오스 이론, 프랙탈 이론에 대한 간단한 정리"
+thumbnail: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0arBGzIcmKvwQETVj82QViCXG-I3n9t-sm3fWT8MKyw&s=10
 draft: false
 source: notion
 notionId: 3b9f9dfb-8099-808c-a5c1-c72df9b25b6e
 notionUrl: https://app.notion.com/p/3b9f9dfb8099808ca5c1c72df9b25b6e
-notionEdited: 2026-08-28T00:35:00.000Z
+notionEdited: 2026-08-28T00:48:00.000Z
 syncVersion: 2
 ---
+
+썸네일 : [https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0arBGzIcmKvwQETVj82QViCXG-I3n9t-sm3fWT8MKyw&s=10](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0arBGzIcmKvwQETVj82QViCXG-I3n9t-sm3fWT8MKyw&s=10)
 
 **카오스 이론 :**
 미래의 예측이 불가능한 매우 불규칙적인 상태에서도 논리적 법칙이 존재한다는 이론

@@ -10,6 +10,8 @@ draft: false
 source: notion
 notionId: 3bcf9dfb-8099-8017-a95e-dc99469f6bac
 notionUrl: https://app.notion.com/p/RNN-1-3bcf9dfb80998017a95edc99469f6bac
+notionEdited: 2026-08-14T05:56:00.000Z
+syncVersion: 2
 ---
 
 썸네일 주소 : [https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxMMsdcj-dQosrudLxBXbTQ3ok6JdIKtVAW6h8RhEORw&s=10](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxMMsdcj-dQosrudLxBXbTQ3ok6JdIKtVAW6h8RhEORw&s=10)

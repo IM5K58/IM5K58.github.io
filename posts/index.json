@@ -8,9 +8,49 @@
     "Chaos",
     "Infra",
     "Infra/Docker",
+    "Study",
+    "Study/AI",
     "Theory"
   ],
   "posts": [
+    {
+      "slug": "study-with-oh-1",
+      "title": "OH 딥러닝 스터디 기록 (1)",
+      "date": "2026-08-28T09:39:00+09:00",
+      "updated": "2026-08-28T09:46:00+09:00",
+      "category": "Study/AI",
+      "tags": [
+        "Study",
+        "DeepLearning"
+      ],
+      "summary": "오승상 교수님 딥러닝 강의 스터디 기록 1 - 딥러닝의 소개",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4FO8VtFsoZDG_xSTyDNMrcMeWxqkg4726RyjRVxhtlA&s=10",
+      "draft": false,
+      "source": "notion",
+      "notionId": "3caf9dfb-8099-80d5-b843-fda42eef43c8",
+      "notionUrl": "https://app.notion.com/p/OH-1-3caf9dfb809980d5b843fda42eef43c8",
+      "notionEdited": "2026-08-28T00:46:00.000Z",
+      "syncVersion": 2
+    },
+    {
+      "slug": "lstm-vs-gru",
+      "title": "LSTM vs. GRU",
+      "date": "2026-08-28T09:38:00+09:00",
+      "updated": "2026-08-28T09:40:00+09:00",
+      "category": "AI/DeepLearning",
+      "tags": [
+        "LSTM",
+        "GRU"
+      ],
+      "summary": "LSTM과 GRU 비교",
+      "thumbnail": "",
+      "draft": false,
+      "source": "notion",
+      "notionId": "3caf9dfb-8099-80db-982a-ffd2b3a2bf8d",
+      "notionUrl": "https://app.notion.com/p/LSTM-vs-GRU-3caf9dfb809980db982affd2b3a2bf8d",
+      "notionEdited": "2026-08-28T00:40:00.000Z",
+      "syncVersion": 2
+    },
     {
       "slug": "rnn-1",
       "title": "RNN (1)",
@@ -25,7 +65,9 @@
       "draft": false,
       "source": "notion",
       "notionId": "3bcf9dfb-8099-8017-a95e-dc99469f6bac",
-      "notionUrl": "https://app.notion.com/p/RNN-1-3bcf9dfb80998017a95edc99469f6bac"
+      "notionUrl": "https://app.notion.com/p/RNN-1-3bcf9dfb80998017a95edc99469f6bac",
+      "notionEdited": "2026-08-14T05:56:00.000Z",
+      "syncVersion": 2
     },
     {
       "slug": "lstm-1",
@@ -41,7 +83,9 @@
       "draft": false,
       "source": "notion",
       "notionId": "3bcf9dfb-8099-8004-bb4e-faab83079da6",
-      "notionUrl": "https://app.notion.com/p/LSTM-1-3bcf9dfb80998004bb4efaab83079da6"
+      "notionUrl": "https://app.notion.com/p/LSTM-1-3bcf9dfb80998004bb4efaab83079da6",
+      "notionEdited": "2026-08-14T05:36:00.000Z",
+      "syncVersion": 2
     },
     {
       "slug": "ml-dimension",
@@ -63,21 +107,21 @@
     },
     {
       "slug": "chaos-fractal",
-      "title": "카오스 이론 + 프랙탈 이론",
+      "title": "카오스/프랙탈 이론 정리",
       "date": "2026-08-11T09:52:00+09:00",
-      "updated": "2026-08-28T09:35:00+09:00",
+      "updated": "2026-08-28T09:48:00+09:00",
       "category": "Theory",
       "tags": [
         "Chaos",
         "Fractal"
       ],
       "summary": "카오스 이론, 프랙탈 이론에 대한 간단한 정리",
-      "thumbnail": "",
+      "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0arBGzIcmKvwQETVj82QViCXG-I3n9t-sm3fWT8MKyw&s=10",
       "draft": false,
       "source": "notion",
       "notionId": "3b9f9dfb-8099-808c-a5c1-c72df9b25b6e",
       "notionUrl": "https://app.notion.com/p/3b9f9dfb8099808ca5c1c72df9b25b6e",
-      "notionEdited": "2026-08-28T00:35:00.000Z",
+      "notionEdited": "2026-08-28T00:48:00.000Z",
       "syncVersion": 2
     }
   ]
