@@ -107,8 +107,9 @@ const Posts = (() => {
     return hueMap?.get(topOf(path)) ?? CAT_HUES[0];
   }
 
-  // 최근 2주 안에 올린 글은 목록에서 표시해 준다
-  function isNew(iso, days = 14) {
+  // 최근 5일 안에 올린 글은 목록에서 표시해 준다.
+  // 판정은 브라우저가 페이지를 열 때 하므로, 배포와 무관하게 시각이 지나면 사라진다.
+  function isNew(iso, days = 5) {
     const t = new Date(iso).getTime();
     if (isNaN(t)) return false;
     return Date.now() - t < days * 86400000;
