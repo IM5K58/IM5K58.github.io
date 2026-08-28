@@ -7,7 +7,8 @@
     "Algorithm",
     "Chaos",
     "Infra",
-    "Infra/Docker"
+    "Infra/Docker",
+    "Theory"
   ],
   "posts": [
     {
@@ -44,6 +45,43 @@
       "notionId": "3bcf9dfb-8099-8004-bb4e-faab83079da6",
       "notionUrl": "https://app.notion.com/p/LSTM-1-3bcf9dfb80998004bb4efaab83079da6",
       "notionEdited": "2026-08-14T05:36:00.000Z",
+      "syncVersion": 2
+    },
+    {
+      "slug": "ml-dimension",
+      "title": "머신러닝에서의 차원에 대해서",
+      "date": "2026-08-14T13:51:00+09:00",
+      "updated": "2026-08-28T09:29:00+09:00",
+      "category": "AI",
+      "tags": [
+        "Dimension"
+      ],
+      "summary": "차원이란",
+      "thumbnail": "",
+      "draft": false,
+      "source": "notion",
+      "notionId": "3bcf9dfb-8099-8096-8256-fcaee919fafe",
+      "notionUrl": "https://app.notion.com/p/3bcf9dfb809980968256fcaee919fafe",
+      "notionEdited": "2026-08-28T00:29:00.000Z",
+      "syncVersion": 2
+    },
+    {
+      "slug": "chaos-fractal",
+      "title": "카오스 이론 + 프랙탈 이론",
+      "date": "2026-08-11T09:52:00+09:00",
+      "updated": "2026-08-28T09:35:00+09:00",
+      "category": "Theory",
+      "tags": [
+        "Chaos",
+        "Fractal"
+      ],
+      "summary": "카오스 이론, 프랙탈 이론에 대한 간단한 정리",
+      "thumbnail": "",
+      "draft": false,
+      "source": "notion",
+      "notionId": "3b9f9dfb-8099-808c-a5c1-c72df9b25b6e",
+      "notionUrl": "https://app.notion.com/p/3b9f9dfb8099808ca5c1c72df9b25b6e",
+      "notionEdited": "2026-08-28T00:35:00.000Z",
       "syncVersion": 2
     },
     {
